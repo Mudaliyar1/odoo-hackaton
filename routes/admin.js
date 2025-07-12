@@ -4,6 +4,7 @@ const User = require('../models/User');
 const SkillSwap = require('../models/SkillSwap');
 const Feedback = require('../models/Feedback');
 const Announcement = require('../models/Announcement');
+const Contact = require('../models/Contact');
 const { requireAuth, requireAdmin, checkBanned } = require('../middleware/auth');
 
 const router = express.Router();
@@ -28,10 +29,12 @@ router.get('/', async (req, res) => {
       SkillSwap.countDocuments({ status: 'completed' }),
       Feedback.countDocuments(),
       Announcement.countDocuments({ isActive: true }),
+      Contact.countDocuments(),
+      Contact.countDocuments({ status: 'new' }),
       User.countDocuments({ role: 'user', createdAt: { $gte: oneWeekAgo } })
     ]);
 
-    const [totalUsers, bannedUsers, totalSwaps, pendingSwaps, completedSwaps, totalFeedback, activeAnnouncements, newUsersThisWeek] = stats;
+    const [totalUsers, bannedUsers, totalSwaps, pendingSwaps, completedSwaps, totalFeedback, activeAnnouncements, totalContacts, pendingContacts, newUsersThisWeek] = stats;
 
     // Get recent activity
     const recentUsers = await User.find({ role: 'user' })
@@ -62,6 +65,8 @@ router.get('/', async (req, res) => {
         completedSwaps,
         totalFeedback,
         activeAnnouncements,
+        totalContacts,
+        pendingContacts,
         newUsersThisWeek
       },
       recentUsers,
@@ -93,11 +98,16 @@ router.get('/', async (req, res) => {
 // GET /admin/users - Manage users
 router.get('/users', async (req, res) => {
   try {
-    const { search, status = 'all', page = 1 } = req.query;
+    const { search, status = 'all', role = 'all', page = 1 } = req.query;
     const limit = 20;
     const skip = (page - 1) * limit;
 
-    let query = { role: 'user' };
+    let query = {};
+
+    // Role filter
+    if (role !== 'all') {
+      query.role = role;
+    }
 
     // Search filter
     if (search && search.trim()) {
@@ -124,9 +134,11 @@ router.get('/users', async (req, res) => {
     const totalPages = Math.ceil(totalUsers / limit);
 
     res.render('admin/users', {
-      title: 'Manage Users',
+      title: 'User Management',
+      user: req.session.user,
       users,
-      filters: { search, status },
+      filters: { search, status, role },
+      success: req.query.success,
       pagination: {
         current: parseInt(page),
         total: totalPages,
@@ -183,6 +195,257 @@ router.post('/users/:id/unban', async (req, res) => {
   }
 });
 
+// GET /admin/users/create - Create new user form
+router.get('/users/create', (req, res) => {
+  res.render('admin/user-form', {
+    title: 'Create New User',
+    user: req.session.user,
+    editUser: null,
+    isEdit: false
+  });
+});
+
+// POST /admin/users/create - Create new user
+router.post('/users/create', [
+  body('name')
+    .trim()
+    .isLength({ min: 2, max: 50 })
+    .withMessage('Name must be between 2 and 50 characters'),
+  body('email')
+    .isEmail()
+    .normalizeEmail()
+    .withMessage('Please enter a valid email address'),
+  body('password')
+    .isLength({ min: 6 })
+    .withMessage('Password must be at least 6 characters long'),
+  body('role')
+    .isIn(['user', 'admin'])
+    .withMessage('Role must be either user or admin')
+], async (req, res) => {
+  try {
+    const errors = validationResult(req);
+
+    if (!errors.isEmpty()) {
+      return res.render('admin/user-form', {
+        title: 'Create New User',
+        user: req.session.user,
+        editUser: null,
+        isEdit: false,
+        errors: errors.array(),
+        formData: req.body
+      });
+    }
+
+    const { name, email, password, role } = req.body;
+
+    // Check if user already exists
+    const existingUser = await User.findOne({ email });
+    if (existingUser) {
+      return res.render('admin/user-form', {
+        title: 'Create New User',
+        user: req.session.user,
+        editUser: null,
+        isEdit: false,
+        errors: [{ msg: 'User with this email already exists' }],
+        formData: req.body
+      });
+    }
+
+    // Create new user
+    const newUser = new User({
+      name,
+      email,
+      password, // Will be hashed by the pre-save middleware
+      role,
+      isPublic: true
+    });
+
+    await newUser.save();
+
+    res.redirect('/admin/users?success=User created successfully');
+  } catch (error) {
+    console.error('Create user error:', error);
+    res.render('admin/user-form', {
+      title: 'Create New User',
+      user: req.session.user,
+      editUser: null,
+      isEdit: false,
+      errors: [{ msg: 'Failed to create user. Please try again.' }],
+      formData: req.body
+    });
+  }
+});
+
+// GET /admin/users/:id/edit - Edit user form
+router.get('/users/:id/edit', async (req, res) => {
+  try {
+    const editUser = await User.findById(req.params.id);
+
+    if (!editUser) {
+      return res.status(404).render('404', { title: 'User Not Found' });
+    }
+
+    res.render('admin/user-form', {
+      title: 'Edit User',
+      user: req.session.user,
+      editUser,
+      isEdit: true
+    });
+  } catch (error) {
+    console.error('Edit user form error:', error);
+    res.status(404).render('404', { title: 'User Not Found' });
+  }
+});
+
+// POST /admin/users/:id/edit - Update user
+router.post('/users/:id/edit', [
+  body('name')
+    .trim()
+    .isLength({ min: 2, max: 50 })
+    .withMessage('Name must be between 2 and 50 characters'),
+  body('email')
+    .isEmail()
+    .normalizeEmail()
+    .withMessage('Please enter a valid email address'),
+  body('password')
+    .optional()
+    .isLength({ min: 6 })
+    .withMessage('Password must be at least 6 characters long'),
+  body('role')
+    .isIn(['user', 'admin'])
+    .withMessage('Role must be either user or admin')
+], async (req, res) => {
+  try {
+    const editUser = await User.findById(req.params.id);
+
+    if (!editUser) {
+      return res.status(404).render('404', { title: 'User Not Found' });
+    }
+
+    const errors = validationResult(req);
+
+    if (!errors.isEmpty()) {
+      return res.render('admin/user-form', {
+        title: 'Edit User',
+        user: req.session.user,
+        editUser,
+        isEdit: true,
+        errors: errors.array(),
+        formData: req.body
+      });
+    }
+
+    const { name, email, password, role } = req.body;
+
+    // Check if email is already taken by another user
+    const existingUser = await User.findOne({
+      email,
+      _id: { $ne: req.params.id }
+    });
+
+    if (existingUser) {
+      return res.render('admin/user-form', {
+        title: 'Edit User',
+        user: req.session.user,
+        editUser,
+        isEdit: true,
+        errors: [{ msg: 'Email is already taken by another user' }],
+        formData: req.body
+      });
+    }
+
+    // Update user fields
+    editUser.name = name;
+    editUser.email = email;
+    editUser.role = role;
+
+    // Only update password if provided
+    if (password && password.trim()) {
+      editUser.password = password; // Will be hashed by pre-save middleware
+    }
+
+    await editUser.save();
+
+    res.redirect('/admin/users?success=User updated successfully');
+  } catch (error) {
+    console.error('Update user error:', error);
+    const editUser = await User.findById(req.params.id);
+    res.render('admin/user-form', {
+      title: 'Edit User',
+      user: req.session.user,
+      editUser,
+      isEdit: true,
+      errors: [{ msg: 'Failed to update user. Please try again.' }],
+      formData: req.body
+    });
+  }
+});
+
+// POST /admin/users/:id/reset-password - Reset user password
+router.post('/users/:id/reset-password', async (req, res) => {
+  try {
+    const { password } = req.body;
+
+    if (!password || password.length < 6) {
+      return res.status(400).json({ error: 'Password must be at least 6 characters long' });
+    }
+
+    const user = await User.findById(req.params.id);
+    if (!user) {
+      return res.status(404).json({ error: 'User not found' });
+    }
+
+    user.password = password; // Will be hashed by pre-save middleware
+    await user.save();
+
+    res.json({ success: true, message: 'Password reset successfully' });
+  } catch (error) {
+    console.error('Reset password error:', error);
+    res.status(500).json({ error: 'Failed to reset password' });
+  }
+});
+
+// DELETE /admin/users/:id - Delete user
+router.delete('/users/:id', async (req, res) => {
+  try {
+    const user = await User.findById(req.params.id);
+    if (!user) {
+      return res.status(404).json({ error: 'User not found' });
+    }
+
+    // Don't allow deleting the current admin user
+    if (user._id.toString() === req.session.user.id) {
+      return res.status(400).json({ error: 'Cannot delete your own account' });
+    }
+
+    // Delete user and related data
+    await User.findByIdAndDelete(req.params.id);
+
+    // Also delete related swaps and feedback
+    const SkillSwap = require('../models/SkillSwap');
+    const Feedback = require('../models/Feedback');
+
+    await SkillSwap.deleteMany({
+      $or: [
+        { requester: req.params.id },
+        { recipient: req.params.id }
+      ]
+    });
+
+    await Feedback.deleteMany({
+      $or: [
+        { reviewer: req.params.id },
+        { reviewee: req.params.id }
+      ]
+    });
+
+    res.json({ success: true, message: 'User deleted successfully' });
+  } catch (error) {
+    console.error('Delete user error:', error);
+    res.status(500).json({ error: 'Failed to delete user' });
+  }
+});
+
 // GET /admin/swaps - Manage swaps
 router.get('/swaps', async (req, res) => {
   try {
@@ -203,6 +466,10 @@ router.get('/swaps', async (req, res) => {
       .sort({ createdAt: -1 })
       .skip(skip)
       .limit(limit);
+
+    // Debug: Check swap IDs
+    console.log('Admin swaps - First swap ID:', swaps.length > 0 ? swaps[0]._id : 'No swaps');
+    console.log('Admin swaps - First swap ID type:', swaps.length > 0 ? typeof swaps[0]._id : 'N/A');
 
     const totalSwaps = await SkillSwap.countDocuments(query);
     const totalPages = Math.ceil(totalSwaps / limit);
@@ -471,6 +738,181 @@ router.get('/reports', async (req, res) => {
       data: [],
       reportType: 'users'
     });
+  }
+});
+
+// GET /admin/contacts - Manage contact submissions
+router.get('/contacts', async (req, res) => {
+  try {
+    const { status = 'all', priority = 'all', subject = 'all', page = 1 } = req.query;
+    const limit = 20;
+    const skip = (page - 1) * limit;
+
+    let query = {};
+
+    // Status filter
+    if (status !== 'all') {
+      query.status = status;
+    }
+
+    // Priority filter
+    if (priority !== 'all') {
+      query.priority = priority;
+    }
+
+    // Subject filter
+    if (subject !== 'all') {
+      query.subject = subject;
+    }
+
+    const contacts = await Contact.find(query)
+      .populate('assignedTo', 'name email')
+      .populate('resolvedBy', 'name email')
+      .sort({ createdAt: -1 })
+      .skip(skip)
+      .limit(limit);
+
+    const totalContacts = await Contact.countDocuments(query);
+    const totalPages = Math.ceil(totalContacts / limit);
+
+    // Get statistics
+    const stats = await Contact.getStats();
+
+    res.render('admin/contacts', {
+      title: 'Contact Management',
+      user: req.session.user,
+      contacts,
+      stats,
+      filters: { status, priority, subject },
+      success: req.query.success,
+      pagination: {
+        current: parseInt(page),
+        total: totalPages,
+        hasNext: page < totalPages,
+        hasPrev: page > 1
+      }
+    });
+  } catch (error) {
+    console.error('Admin contacts error:', error);
+    res.render('admin/contacts', {
+      title: 'Contact Management',
+      user: req.session.user,
+      contacts: [],
+      stats: { total: 0, new: 0, inProgress: 0, resolved: 0, closed: 0 },
+      filters: { status: 'all', priority: 'all', subject: 'all' },
+      pagination: { current: 1, total: 1, hasNext: false, hasPrev: false }
+    });
+  }
+});
+
+// GET /admin/contacts/:id - View contact details
+router.get('/contacts/:id', async (req, res) => {
+  try {
+    const contact = await Contact.findById(req.params.id)
+      .populate('assignedTo', 'name email')
+      .populate('resolvedBy', 'name email');
+
+    if (!contact) {
+      return res.status(404).render('404', { title: 'Contact Not Found' });
+    }
+
+    // Mark as read if not already
+    if (!contact.isRead) {
+      await contact.markAsRead();
+    }
+
+    res.render('admin/contact-details', {
+      title: 'Contact Details',
+      user: req.session.user,
+      contact,
+      success: req.query.success
+    });
+  } catch (error) {
+    console.error('Contact details error:', error);
+    res.status(404).render('404', { title: 'Contact Not Found' });
+  }
+});
+
+// POST /admin/contacts/:id/update - Update contact status/priority
+router.post('/contacts/:id/update', [
+  body('status')
+    .isIn(['new', 'in-progress', 'resolved', 'closed'])
+    .withMessage('Invalid status'),
+  body('priority')
+    .isIn(['low', 'medium', 'high', 'urgent'])
+    .withMessage('Invalid priority'),
+  body('adminNotes')
+    .optional()
+    .trim()
+    .isLength({ max: 1000 })
+    .withMessage('Admin notes must be less than 1000 characters')
+], async (req, res) => {
+  try {
+    const errors = validationResult(req);
+
+    if (!errors.isEmpty()) {
+      return res.redirect(`/admin/contacts/${req.params.id}?error=Invalid input data`);
+    }
+
+    const contact = await Contact.findById(req.params.id);
+    if (!contact) {
+      return res.status(404).json({ error: 'Contact not found' });
+    }
+
+    const { status, priority, adminNotes } = req.body;
+
+    contact.status = status;
+    contact.priority = priority;
+    contact.adminNotes = adminNotes || '';
+
+    if (status === 'resolved' || status === 'closed') {
+      contact.resolvedAt = new Date();
+      contact.resolvedBy = req.session.user.id;
+    }
+
+    await contact.save();
+
+    res.redirect(`/admin/contacts/${req.params.id}?success=Contact updated successfully`);
+  } catch (error) {
+    console.error('Update contact error:', error);
+    res.redirect(`/admin/contacts/${req.params.id}?error=Failed to update contact`);
+  }
+});
+
+// POST /admin/contacts/:id/assign - Assign contact to admin
+router.post('/contacts/:id/assign', async (req, res) => {
+  try {
+    const contact = await Contact.findById(req.params.id);
+    if (!contact) {
+      return res.status(404).json({ error: 'Contact not found' });
+    }
+
+    contact.assignedTo = req.session.user.id;
+    if (contact.status === 'new') {
+      contact.status = 'in-progress';
+    }
+
+    await contact.save();
+
+    res.json({ success: true, message: 'Contact assigned successfully' });
+  } catch (error) {
+    console.error('Assign contact error:', error);
+    res.status(500).json({ error: 'Failed to assign contact' });
+  }
+});
+
+// DELETE /admin/contacts/:id - Delete contact
+router.delete('/contacts/:id', async (req, res) => {
+  try {
+    const contact = await Contact.findByIdAndDelete(req.params.id);
+    if (!contact) {
+      return res.status(404).json({ error: 'Contact not found' });
+    }
+
+    res.json({ success: true, message: 'Contact deleted successfully' });
+  } catch (error) {
+    console.error('Delete contact error:', error);
+    res.status(500).json({ error: 'Failed to delete contact' });
   }
 });
 

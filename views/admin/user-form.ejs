@@ -1,0 +1,306 @@
+<%- include('../partials/admin-header') %>
+
+<!-- User Form -->
+<div class="row justify-content-center">
+    <div class="col-lg-8">
+        <!-- Header -->
+        <div class="card mb-4">
+            <div class="card-header bg-primary text-white">
+                <h3 class="mb-0">
+                    <i class="fas fa-<%= isEdit ? 'edit' : 'plus' %> me-2"></i>
+                    <%= isEdit ? 'Edit User' : 'Create New User' %>
+                </h3>
+            </div>
+            <div class="card-body">
+                <% if (isEdit) { %>
+                    <div class="alert alert-info">
+                        <i class="fas fa-info-circle me-2"></i>
+                        Editing user: <strong><%= editUser.name %></strong> (<%= editUser.email %>)
+                    </div>
+                <% } %>
+                
+                <!-- Error Messages -->
+                <% if (typeof errors !== 'undefined' && errors.length > 0) { %>
+                    <div class="alert alert-danger">
+                        <h6><i class="fas fa-exclamation-triangle me-2"></i>Please fix the following errors:</h6>
+                        <ul class="mb-0">
+                            <% errors.forEach(function(error) { %>
+                                <li><%= error.msg %></li>
+                            <% }); %>
+                        </ul>
+                    </div>
+                <% } %>
+
+                <!-- User Form -->
+                <form method="POST" action="<%= isEdit ? `/admin/users/${editUser._id}/edit` : '/admin/users/create' %>">
+                    <div class="row g-3">
+                        <!-- Name -->
+                        <div class="col-md-6">
+                            <label for="name" class="form-label">
+                                <i class="fas fa-user me-2"></i>Full Name *
+                            </label>
+                            <input type="text" 
+                                   class="form-control" 
+                                   id="name" 
+                                   name="name" 
+                                   value="<%= isEdit ? editUser.name : (typeof formData !== 'undefined' ? formData.name || '' : '') %>" 
+                                   required>
+                        </div>
+
+                        <!-- Email -->
+                        <div class="col-md-6">
+                            <label for="email" class="form-label">
+                                <i class="fas fa-envelope me-2"></i>Email Address *
+                            </label>
+                            <input type="email" 
+                                   class="form-control" 
+                                   id="email" 
+                                   name="email" 
+                                   value="<%= isEdit ? editUser.email : (typeof formData !== 'undefined' ? formData.email || '' : '') %>" 
+                                   required>
+                        </div>
+
+                        <!-- Password -->
+                        <div class="col-md-6">
+                            <label for="password" class="form-label">
+                                <i class="fas fa-lock me-2"></i>Password <%= isEdit ? '(leave blank to keep current)' : '*' %>
+                            </label>
+                            <input type="password" 
+                                   class="form-control" 
+                                   id="password" 
+                                   name="password" 
+                                   <%= !isEdit ? 'required' : '' %>>
+                            <% if (isEdit) { %>
+                                <small class="text-muted">Leave blank to keep the current password</small>
+                            <% } %>
+                        </div>
+
+                        <!-- Role -->
+                        <div class="col-md-6">
+                            <label for="role" class="form-label">
+                                <i class="fas fa-shield-alt me-2"></i>User Role *
+                            </label>
+                            <select class="form-select" id="role" name="role" required>
+                                <option value="">Select Role...</option>
+                                <option value="user" <%= (isEdit && editUser.role === 'user') || (typeof formData !== 'undefined' && formData.role === 'user') ? 'selected' : '' %>>
+                                    Regular User
+                                </option>
+                                <option value="admin" <%= (isEdit && editUser.role === 'admin') || (typeof formData !== 'undefined' && formData.role === 'admin') ? 'selected' : '' %>>
+                                    Administrator
+                                </option>
+                            </select>
+                        </div>
+
+                        <!-- Additional Info for Edit -->
+                        <% if (isEdit) { %>
+                            <div class="col-12">
+                                <div class="card bg-light">
+                                    <div class="card-body">
+                                        <h6 class="card-title">
+                                            <i class="fas fa-info-circle me-2"></i>User Information
+                                        </h6>
+                                        <div class="row">
+                                            <div class="col-md-4">
+                                                <strong>Account Status:</strong><br>
+                                                <span class="badge bg-<%= editUser.isBanned ? 'danger' : 'success' %>">
+                                                    <%= editUser.isBanned ? 'Banned' : 'Active' %>
+                                                </span>
+                                            </div>
+                                            <div class="col-md-4">
+                                                <strong>Profile Visibility:</strong><br>
+                                                <span class="badge bg-<%= editUser.isPublic ? 'info' : 'secondary' %>">
+                                                    <%= editUser.isPublic ? 'Public' : 'Private' %>
+                                                </span>
+                                            </div>
+                                            <div class="col-md-4">
+                                                <strong>Member Since:</strong><br>
+                                                <small class="text-muted">
+                                                    <%= new Date(editUser.createdAt).toLocaleDateString() %>
+                                                </small>
+                                            </div>
+                                        </div>
+                                        <div class="row mt-3">
+                                            <div class="col-md-6">
+                                                <strong>Skills Offered:</strong><br>
+                                                <small class="text-muted">
+                                                    <%= editUser.skillsOffered && editUser.skillsOffered.length > 0 ? editUser.skillsOffered.length + ' skills' : 'None' %>
+                                                </small>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <strong>Skills Wanted:</strong><br>
+                                                <small class="text-muted">
+                                                    <%= editUser.skillsWanted && editUser.skillsWanted.length > 0 ? editUser.skillsWanted.length + ' skills' : 'None' %>
+                                                </small>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        <% } %>
+
+                        <!-- Form Actions -->
+                        <div class="col-12">
+                            <hr class="my-4">
+                            <div class="d-flex justify-content-between">
+                                <a href="/admin/users" class="btn btn-secondary">
+                                    <i class="fas fa-arrow-left me-2"></i>
+                                    Back to Users
+                                </a>
+                                <div>
+                                    <% if (isEdit) { %>
+                                        <a href="/admin/users/<%= editUser._id %>/profile" class="btn btn-outline-info me-2">
+                                            <i class="fas fa-eye me-2"></i>
+                                            View Profile
+                                        </a>
+                                    <% } %>
+                                    <button type="submit" class="btn btn-primary">
+                                        <i class="fas fa-<%= isEdit ? 'save' : 'plus' %> me-2"></i>
+                                        <%= isEdit ? 'Update User' : 'Create User' %>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Additional Actions for Edit -->
+        <% if (isEdit) { %>
+            <div class="card">
+                <div class="card-header bg-warning text-dark">
+                    <h5 class="mb-0">
+                        <i class="fas fa-tools me-2"></i>
+                        Additional Actions
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="row g-3">
+                        <div class="col-md-4">
+                            <% if (editUser.isBanned) { %>
+                                <button class="btn btn-success w-100" onclick="unbanUser('<%= editUser._id %>')">
+                                    <i class="fas fa-unlock me-2"></i>
+                                    Unban User
+                                </button>
+                            <% } else { %>
+                                <button class="btn btn-warning w-100" onclick="banUser('<%= editUser._id %>')">
+                                    <i class="fas fa-ban me-2"></i>
+                                    Ban User
+                                </button>
+                            <% } %>
+                        </div>
+                        <div class="col-md-4">
+                            <button class="btn btn-info w-100" onclick="resetPassword('<%= editUser._id %>')">
+                                <i class="fas fa-key me-2"></i>
+                                Reset Password
+                            </button>
+                        </div>
+                        <div class="col-md-4">
+                            <button class="btn btn-danger w-100" onclick="deleteUser('<%= editUser._id %>')" data-confirm="Are you sure you want to delete this user? This action cannot be undone.">
+                                <i class="fas fa-trash me-2"></i>
+                                Delete User
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        <% } %>
+    </div>
+</div>
+
+<script>
+// Ban user function
+async function banUser(userId) {
+    if (!confirm('Are you sure you want to ban this user?')) return;
+    
+    try {
+        const response = await fetch(`/admin/users/${userId}/ban`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' }
+        });
+        
+        const result = await response.json();
+        
+        if (result.success) {
+            location.reload();
+        } else {
+            alert('Error: ' + result.error);
+        }
+    } catch (error) {
+        alert('Error banning user');
+    }
+}
+
+// Unban user function
+async function unbanUser(userId) {
+    if (!confirm('Are you sure you want to unban this user?')) return;
+    
+    try {
+        const response = await fetch(`/admin/users/${userId}/unban`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' }
+        });
+        
+        const result = await response.json();
+        
+        if (result.success) {
+            location.reload();
+        } else {
+            alert('Error: ' + result.error);
+        }
+    } catch (error) {
+        alert('Error unbanning user');
+    }
+}
+
+// Reset password function
+async function resetPassword(userId) {
+    const newPassword = prompt('Enter new password (minimum 6 characters):');
+    if (!newPassword || newPassword.length < 6) {
+        alert('Password must be at least 6 characters long');
+        return;
+    }
+    
+    try {
+        const response = await fetch(`/admin/users/${userId}/reset-password`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ password: newPassword })
+        });
+        
+        const result = await response.json();
+        
+        if (result.success) {
+            alert('Password reset successfully');
+        } else {
+            alert('Error: ' + result.error);
+        }
+    } catch (error) {
+        alert('Error resetting password');
+    }
+}
+
+// Delete user function
+async function deleteUser(userId) {
+    if (!confirm('Are you sure you want to delete this user? This action cannot be undone.')) return;
+    
+    try {
+        const response = await fetch(`/admin/users/${userId}`, {
+            method: 'DELETE',
+            headers: { 'Content-Type': 'application/json' }
+        });
+        
+        const result = await response.json();
+        
+        if (result.success) {
+            window.location.href = '/admin/users?success=User deleted successfully';
+        } else {
+            alert('Error: ' + result.error);
+        }
+    } catch (error) {
+        alert('Error deleting user');
+    }
+}
+</script>
+
+<%- include('../partials/admin-footer') %>

@@ -5,6 +5,11 @@ const User = require('../models/User');
 const Feedback = require('../models/Feedback');
 const { requireAuth, checkBanned } = require('../middleware/auth');
 
+// Helper function to validate ObjectId
+function isValidObjectId(id) {
+  return id && id.match(/^[0-9a-fA-F]{24}$/);
+}
+
 const router = express.Router();
 
 // Apply auth and banned checks to all routes
@@ -109,12 +114,6 @@ router.get('/create/:userId', async (req, res) => {
 
 // POST /swaps/create/:userId - Submit swap request
 router.post('/create/:userId', [
-  body('skillsOffered')
-    .isArray({ min: 1 })
-    .withMessage('Please select at least one skill you offer'),
-  body('skillsWanted')
-    .isArray({ min: 1 })
-    .withMessage('Please select at least one skill you want'),
   body('message')
     .optional()
     .trim()
@@ -124,7 +123,8 @@ router.post('/create/:userId', [
   try {
     const errors = validationResult(req);
     const recipient = await User.findById(req.params.userId);
-    
+    const requester = await User.findById(req.session.user.id);
+
     if (!recipient || !recipient.isPublic || recipient.isBanned) {
       return res.status(404).render('404', { title: 'User Not Found' });
     }
@@ -133,13 +133,39 @@ router.post('/create/:userId', [
       return res.redirect('/users/dashboard');
     }
 
-    if (!errors.isEmpty()) {
-      const requester = await User.findById(req.session.user.id);
+    // Custom validation for skills
+    const customErrors = [];
+    let { skillsOffered, skillsWanted, message } = req.body;
+
+    // Ensure arrays (when no checkboxes are selected, the field might be undefined)
+    skillsOffered = Array.isArray(skillsOffered) ? skillsOffered : (skillsOffered ? [skillsOffered] : []);
+    skillsWanted = Array.isArray(skillsWanted) ? skillsWanted : (skillsWanted ? [skillsWanted] : []);
+
+    // Check if requester has skills to offer and if they selected any
+    const requesterHasSkillsToOffer = requester.skillsOffered && requester.skillsOffered.length > 0;
+    const recipientHasSkillsToOffer = recipient.skillsOffered && recipient.skillsOffered.length > 0;
+
+    if (requesterHasSkillsToOffer && skillsOffered.length === 0) {
+      customErrors.push({ msg: 'Please select at least one skill you can offer' });
+    }
+
+    if (recipientHasSkillsToOffer && skillsWanted.length === 0) {
+      customErrors.push({ msg: 'Please select at least one skill you want to learn' });
+    }
+
+    // If neither user has skills, that's also an error
+    if (!requesterHasSkillsToOffer && !recipientHasSkillsToOffer) {
+      customErrors.push({ msg: 'Both you and the recipient need to add skills to your profiles before creating a swap request' });
+    }
+
+    const allErrors = [...errors.array(), ...customErrors];
+
+    if (allErrors.length > 0) {
       return res.render('swaps/create', {
         title: 'Create Skill Swap Request',
         recipient,
         requester,
-        errors: errors.array(),
+        errors: allErrors,
         formData: req.body
       });
     }
@@ -152,7 +178,6 @@ router.post('/create/:userId', [
     });
 
     if (existingRequest) {
-      const requester = await User.findById(req.session.user.id);
       return res.render('swaps/create', {
         title: 'Create Skill Swap Request',
         recipient,
@@ -161,8 +186,6 @@ router.post('/create/:userId', [
         formData: req.body
       });
     }
-
-    const { skillsOffered, skillsWanted, message } = req.body;
 
     const skillSwap = new SkillSwap({
       requester: req.session.user.id,
@@ -177,22 +200,51 @@ router.post('/create/:userId', [
     res.redirect('/swaps?status=pending&type=outgoing');
   } catch (error) {
     console.error('Create swap error:', error);
-    const recipient = await User.findById(req.params.userId);
-    const requester = await User.findById(req.session.user.id);
-    res.render('swaps/create', {
-      title: 'Create Skill Swap Request',
-      recipient,
-      requester,
-      errors: [{ msg: 'Failed to create swap request. Please try again.' }],
-      formData: req.body
-    });
+    try {
+      const recipient = await User.findById(req.params.userId);
+      const requester = await User.findById(req.session.user.id);
+      res.render('swaps/create', {
+        title: 'Create Skill Swap Request',
+        recipient,
+        requester,
+        errors: [{ msg: 'Failed to create swap request. Please try again.' }],
+        formData: req.body
+      });
+    } catch (renderError) {
+      console.error('Error rendering error page:', renderError);
+      res.redirect('/users/dashboard');
+    }
   }
 });
 
 // GET /swaps/:id - View swap details
 router.get('/:id', async (req, res) => {
   try {
-    const swap = await SkillSwap.findById(req.params.id)
+    let swapId = req.params.id;
+
+    console.log('Original swap ID:', swapId);
+    console.log('Type:', typeof swapId);
+    console.log('Length:', swapId ? swapId.length : 'undefined');
+
+    // Try to extract ObjectId if it's a stringified object
+    if (swapId && swapId.includes('ObjectId')) {
+      const match = swapId.match(/ObjectId\("([a-fA-F0-9]{24})"\)/);
+      if (match) {
+        swapId = match[1];
+        console.log('Extracted ObjectId:', swapId);
+      }
+    }
+
+    // Validate ObjectId format
+    if (!isValidObjectId(swapId)) {
+      console.error('Invalid swap ID format after processing:', swapId);
+      return res.status(400).render('error', {
+        title: 'Invalid Request',
+        error: { message: 'Invalid swap ID format' }
+      });
+    }
+
+    const swap = await SkillSwap.findById(swapId)
       .populate('requester', 'name profilePhoto email')
       .populate('recipient', 'name profilePhoto email');
 
@@ -200,12 +252,13 @@ router.get('/:id', async (req, res) => {
       return res.status(404).render('404', { title: 'Swap Not Found' });
     }
 
-    // Check if user is part of this swap
+    // Check if user is part of this swap or is an admin
     const userId = req.session.user.id;
-    const isParticipant = swap.requester._id.toString() === userId || 
+    const isAdmin = req.session.user.role === 'admin';
+    const isParticipant = swap.requester._id.toString() === userId ||
                          swap.recipient._id.toString() === userId;
 
-    if (!isParticipant) {
+    if (!isParticipant && !isAdmin) {
       return res.status(403).render('error', {
         title: 'Access Denied',
         error: { message: 'You are not authorized to view this swap' }
@@ -227,10 +280,18 @@ router.get('/:id', async (req, res) => {
       canLeaveFeedback = feedbackCheck.canLeave;
     }
 
+    // Determine user roles
+    const isRequester = swap.requester._id.toString() === userId;
+    const isRecipient = swap.recipient._id.toString() === userId;
+
     res.render('swaps/details', {
       title: 'Swap Details',
+      user: req.session.user,
       swap,
       currentUserId: userId,
+      isRequester,
+      isRecipient,
+      isAdmin,
       feedback,
       canLeaveFeedback
     });
@@ -243,10 +304,24 @@ router.get('/:id', async (req, res) => {
 // POST /swaps/:id/accept - Accept swap request
 router.post('/:id/accept', async (req, res) => {
   try {
-    const swap = await SkillSwap.findById(req.params.id);
+    const swapId = req.params.id;
 
-    if (!swap || swap.recipient.toString() !== req.session.user.id || swap.status !== 'pending') {
+    // Validate ObjectId format
+    if (!isValidObjectId(swapId)) {
+      return res.status(400).json({ error: 'Invalid swap ID format' });
+    }
+
+    const swap = await SkillSwap.findById(swapId);
+    const isAdmin = req.session.user.role === 'admin';
+    const isRecipient = swap && swap.recipient.toString() === req.session.user.id;
+
+    if (!swap || swap.status !== 'pending') {
       return res.status(400).json({ error: 'Invalid request' });
+    }
+
+    // Allow if user is recipient or admin
+    if (!isRecipient && !isAdmin) {
+      return res.status(403).json({ error: 'Not authorized' });
     }
 
     await swap.updateStatus('accepted');
@@ -266,10 +341,24 @@ router.post('/:id/reject', [
     .withMessage('Reason must be less than 200 characters')
 ], async (req, res) => {
   try {
-    const swap = await SkillSwap.findById(req.params.id);
+    const swapId = req.params.id;
 
-    if (!swap || swap.recipient.toString() !== req.session.user.id || swap.status !== 'pending') {
+    // Validate ObjectId format
+    if (!isValidObjectId(swapId)) {
+      return res.status(400).json({ error: 'Invalid swap ID format' });
+    }
+
+    const swap = await SkillSwap.findById(swapId);
+    const isAdmin = req.session.user.role === 'admin';
+    const isRecipient = swap && swap.recipient.toString() === req.session.user.id;
+
+    if (!swap || swap.status !== 'pending') {
       return res.status(400).json({ error: 'Invalid request' });
+    }
+
+    // Allow if user is recipient or admin
+    if (!isRecipient && !isAdmin) {
+      return res.status(403).json({ error: 'Not authorized' });
     }
 
     await swap.updateStatus('rejected', req.body.reason);
@@ -283,17 +372,25 @@ router.post('/:id/reject', [
 // POST /swaps/:id/complete - Mark swap as completed
 router.post('/:id/complete', async (req, res) => {
   try {
-    const swap = await SkillSwap.findById(req.params.id);
+    const swapId = req.params.id;
+
+    // Validate ObjectId format
+    if (!isValidObjectId(swapId)) {
+      return res.status(400).json({ error: 'Invalid swap ID format' });
+    }
+
+    const swap = await SkillSwap.findById(swapId);
 
     if (!swap || swap.status !== 'accepted') {
       return res.status(400).json({ error: 'Invalid request' });
     }
 
     const userId = req.session.user.id;
+    const isAdmin = req.session.user.role === 'admin';
     const isParticipant = swap.requester.toString() === userId ||
                          swap.recipient.toString() === userId;
 
-    if (!isParticipant) {
+    if (!isParticipant && !isAdmin) {
       return res.status(403).json({ error: 'Not authorized' });
     }
 
@@ -308,11 +405,26 @@ router.post('/:id/complete', async (req, res) => {
 // POST /swaps/:id/cancel - Cancel swap request
 router.post('/:id/cancel', async (req, res) => {
   try {
-    const swap = await SkillSwap.findById(req.params.id);
+    const swapId = req.params.id;
 
-    if (!swap || swap.requester.toString() !== req.session.user.id ||
-        !['pending', 'accepted'].includes(swap.status)) {
+    // Validate ObjectId format
+    if (!isValidObjectId(swapId)) {
+      return res.status(400).json({ error: 'Invalid swap ID format' });
+    }
+
+    const swap = await SkillSwap.findById(swapId);
+
+    if (!swap || !['pending', 'accepted'].includes(swap.status)) {
       return res.status(400).json({ error: 'Invalid request' });
+    }
+
+    const userId = req.session.user.id;
+    const isAdmin = req.session.user.role === 'admin';
+    const isRequester = swap.requester.toString() === userId;
+
+    // Allow if user is requester or admin
+    if (!isRequester && !isAdmin) {
+      return res.status(403).json({ error: 'Not authorized' });
     }
 
     await swap.updateStatus('cancelled');
@@ -335,13 +447,20 @@ router.post('/:id/feedback', [
     .withMessage('Comment must be less than 500 characters')
 ], async (req, res) => {
   try {
+    const swapId = req.params.id;
+
+    // Validate ObjectId format
+    if (!isValidObjectId(swapId)) {
+      return res.status(400).json({ error: 'Invalid swap ID format' });
+    }
+
     const errors = validationResult(req);
 
     if (!errors.isEmpty()) {
       return res.status(400).json({ errors: errors.array() });
     }
 
-    const swap = await SkillSwap.findById(req.params.id);
+    const swap = await SkillSwap.findById(swapId);
     const userId = req.session.user.id;
 
     // Check if user can leave feedback

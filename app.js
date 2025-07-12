@@ -49,11 +49,13 @@ const authRoutes = require('./routes/auth');
 const userRoutes = require('./routes/users');
 const swapRoutes = require('./routes/swaps');
 const adminRoutes = require('./routes/admin');
+const pageRoutes = require('./routes/pages');
 
 app.use('/auth', authRoutes);
 app.use('/users', userRoutes);
 app.use('/swaps', swapRoutes);
 app.use('/admin', adminRoutes);
+app.use('/', pageRoutes);
 
 // Home route
 app.get('/', async (req, res) => {

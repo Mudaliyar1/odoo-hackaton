@@ -1,0 +1,194 @@
+<%- include('../partials/admin-header') %>
+
+    <!-- Filters -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card border-0 shadow-sm">
+                <div class="card-body">
+                    <form method="GET" class="row g-3">
+                        <div class="col-md-4">
+                            <label for="status" class="form-label">Status</label>
+                            <select class="form-select" id="status" name="status">
+                                <option value="all" <%= filters.status === 'all' ? 'selected' : '' %>>All Swaps</option>
+                                <option value="pending" <%= filters.status === 'pending' ? 'selected' : '' %>>Pending</option>
+                                <option value="accepted" <%= filters.status === 'accepted' ? 'selected' : '' %>>Accepted</option>
+                                <option value="completed" <%= filters.status === 'completed' ? 'selected' : '' %>>Completed</option>
+                                <option value="rejected" <%= filters.status === 'rejected' ? 'selected' : '' %>>Rejected</option>
+                                <option value="cancelled" <%= filters.status === 'cancelled' ? 'selected' : '' %>>Cancelled</option>
+                            </select>
+                        </div>
+                        <div class="col-md-2">
+                            <label class="form-label">&nbsp;</label>
+                            <div class="d-grid">
+                                <button type="submit" class="btn btn-primary">
+                                    <i class="fas fa-filter me-2"></i>Filter
+                                </button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Swaps Table -->
+    <div class="row">
+        <div class="col-12">
+            <div class="card border-0 shadow-sm">
+                <div class="card-header bg-light">
+                    <h5 class="mb-0">
+                        <i class="fas fa-list me-2"></i>
+                        Skill Swaps
+                    </h5>
+                </div>
+                <div class="card-body p-0">
+                    <% if (swaps && swaps.length > 0) { %>
+                        <div class="table-responsive">
+                            <table class="table table-hover mb-0">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th>Requester</th>
+                                        <th>Recipient</th>
+                                        <th>Skills</th>
+                                        <th>Created</th>
+                                        <th>Status</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <% swaps.forEach(function(swap) { %>
+                                        <tr>
+                                            <td>
+                                                <div class="d-flex align-items-center">
+                                                    <% if (swap.requester && swap.requester.profilePhoto) { %>
+                                                        <img src="/uploads/<%= swap.requester.profilePhoto %>" alt="Profile" 
+                                                             class="rounded-circle me-3" width="32" height="32" style="object-fit: cover;">
+                                                    <% } else { %>
+                                                        <div class="bg-secondary rounded-circle d-flex align-items-center justify-content-center me-3" 
+                                                             style="width: 32px; height: 32px;">
+                                                            <i class="fas fa-user text-white small"></i>
+                                                        </div>
+                                                    <% } %>
+                                                    <div>
+                                                        <h6 class="mb-0"><%= swap.requester ? swap.requester.name : 'Unknown' %></h6>
+                                                        <small class="text-muted"><%= swap.requester ? swap.requester.email : 'N/A' %></small>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                            <td>
+                                                <div class="d-flex align-items-center">
+                                                    <% if (swap.recipient && swap.recipient.profilePhoto) { %>
+                                                        <img src="/uploads/<%= swap.recipient.profilePhoto %>" alt="Profile" 
+                                                             class="rounded-circle me-3" width="32" height="32" style="object-fit: cover;">
+                                                    <% } else { %>
+                                                        <div class="bg-secondary rounded-circle d-flex align-items-center justify-content-center me-3" 
+                                                             style="width: 32px; height: 32px;">
+                                                            <i class="fas fa-user text-white small"></i>
+                                                        </div>
+                                                    <% } %>
+                                                    <div>
+                                                        <h6 class="mb-0"><%= swap.recipient ? swap.recipient.name : 'Unknown' %></h6>
+                                                        <small class="text-muted"><%= swap.recipient ? swap.recipient.email : 'N/A' %></small>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                            <td>
+                                                <div>
+                                                    <% if (swap.skillsOffered && swap.skillsOffered.length > 0) { %>
+                                                        <div class="mb-1">
+                                                            <small class="text-muted">Offered:</small>
+                                                            <% swap.skillsOffered.forEach(function(skill) { %>
+                                                                <span class="badge bg-success me-1"><%= skill %></span>
+                                                            <% }); %>
+                                                        </div>
+                                                    <% } %>
+                                                    <% if (swap.skillsWanted && swap.skillsWanted.length > 0) { %>
+                                                        <div>
+                                                            <small class="text-muted">Wanted:</small>
+                                                            <% swap.skillsWanted.forEach(function(skill) { %>
+                                                                <span class="badge bg-info me-1"><%= skill %></span>
+                                                            <% }); %>
+                                                        </div>
+                                                    <% } %>
+                                                </div>
+                                            </td>
+                                            <td>
+                                                <%= new Date(swap.createdAt).toLocaleDateString() %>
+                                                <br>
+                                                <small class="text-muted"><%= new Date(swap.createdAt).toLocaleTimeString() %></small>
+                                            </td>
+                                            <td>
+                                                <span class="badge bg-<%= 
+                                                    swap.status === 'pending' ? 'warning' : 
+                                                    swap.status === 'accepted' ? 'primary' : 
+                                                    swap.status === 'completed' ? 'success' : 
+                                                    swap.status === 'rejected' ? 'danger' : 'secondary' 
+                                                %>">
+                                                    <%= swap.status.toUpperCase() %>
+                                                </span>
+                                            </td>
+                                            <td>
+                                                <div class="btn-group btn-group-sm">
+                                                    <%
+                                                    // Ensure we get a clean ObjectId string
+                                                    const swapId = swap._id && swap._id.toString ? swap._id.toString() : swap._id;
+                                                    %>
+                                                    <a href="/swaps/<%= swapId %>" class="btn btn-outline-primary" title="View Details">
+                                                        <i class="fas fa-eye"></i>
+                                                    </a>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    <% }); %>
+                                </tbody>
+                            </table>
+                        </div>
+                    <% } else { %>
+                        <div class="text-center py-5">
+                            <i class="fas fa-handshake fs-1 text-muted mb-3"></i>
+                            <h5 class="text-muted">No swaps found</h5>
+                            <p class="text-muted">No skill swaps match your current filters.</p>
+                        </div>
+                    <% } %>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Pagination -->
+    <% if (pagination && pagination.total > 1) { %>
+        <div class="row mt-4">
+            <div class="col-12">
+                <nav aria-label="Swaps pagination">
+                    <ul class="pagination justify-content-center">
+                        <% if (pagination.hasPrev) { %>
+                            <li class="page-item">
+                                <a class="page-link" href="?page=<%= pagination.current - 1 %>&status=<%= filters.status %>">
+                                    <i class="fas fa-chevron-left"></i>
+                                </a>
+                            </li>
+                        <% } %>
+                        
+                        <% for (let i = Math.max(1, pagination.current - 2); i <= Math.min(pagination.total, pagination.current + 2); i++) { %>
+                            <li class="page-item <%= i === pagination.current ? 'active' : '' %>">
+                                <a class="page-link" href="?page=<%= i %>&status=<%= filters.status %>">
+                                    <%= i %>
+                                </a>
+                            </li>
+                        <% } %>
+                        
+                        <% if (pagination.hasNext) { %>
+                            <li class="page-item">
+                                <a class="page-link" href="?page=<%= pagination.current + 1 %>&status=<%= filters.status %>">
+                                    <i class="fas fa-chevron-right"></i>
+                                </a>
+                            </li>
+                        <% } %>
+                    </ul>
+                </nav>
+            </div>
+        </div>
+    <% } %>
+</div>
+
+<%- include('../partials/admin-footer') %>

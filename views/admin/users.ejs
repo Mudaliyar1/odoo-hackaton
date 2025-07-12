@@ -1,44 +1,50 @@
-<%- include('../partials/header') %>
+<%- include('../partials/admin-header') %>
 
-<div class="container py-4">
-    <!-- Header -->
-    <div class="row mb-4">
-        <div class="col-12">
-            <div class="card bg-primary text-white border-0">
-                <div class="card-body">
-                    <div class="d-flex justify-content-between align-items-center">
-                        <div>
-                            <h1 class="h3 fw-bold mb-1">
-                                <i class="fas fa-users me-2"></i>
-                                User Management
-                            </h1>
-                            <p class="mb-0 opacity-75">Manage platform users and permissions</p>
-                        </div>
-                        <a href="/admin" class="btn btn-light">
-                            <i class="fas fa-arrow-left me-2"></i>
-                            Back to Dashboard
-                        </a>
-                    </div>
-                </div>
-            </div>
+<!-- Success Message -->
+<% if (typeof success !== 'undefined' && success) { %>
+    <div class="alert alert-success alert-dismissible fade show" role="alert">
+        <i class="fas fa-check-circle me-2"></i>
+        <%= success %>
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+<% } %>
+
+<!-- Header Actions -->
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="d-flex justify-content-between align-items-center">
+            <h2 class="mb-0">User Management</h2>
+            <a href="/admin/users/create" class="btn btn-success">
+                <i class="fas fa-plus me-2"></i>
+                Create New User
+            </a>
         </div>
     </div>
+</div>
 
-    <!-- Filters -->
-    <div class="row mb-4">
+<!-- Filters -->
+<div class="row mb-4">
         <div class="col-12">
             <div class="card border-0 shadow-sm">
                 <div class="card-body">
                     <form method="GET" class="row g-3">
-                        <div class="col-md-4">
+                        <div class="col-md-3">
                             <label for="search" class="form-label">Search Users</label>
-                            <input type="text" class="form-control" id="search" name="search" 
+                            <input type="text" class="form-control" id="search" name="search"
                                    value="<%= filters.search || '' %>" placeholder="Name or email...">
                         </div>
-                        <div class="col-md-3">
+                        <div class="col-md-2">
+                            <label for="role" class="form-label">Role</label>
+                            <select class="form-select" id="role" name="role">
+                                <option value="all" <%= filters.role === 'all' ? 'selected' : '' %>>All Roles</option>
+                                <option value="user" <%= filters.role === 'user' ? 'selected' : '' %>>Users</option>
+                                <option value="admin" <%= filters.role === 'admin' ? 'selected' : '' %>>Admins</option>
+                            </select>
+                        </div>
+                        <div class="col-md-2">
                             <label for="status" class="form-label">Status</label>
                             <select class="form-select" id="status" name="status">
-                                <option value="all" <%= filters.status === 'all' ? 'selected' : '' %>>All Users</option>
+                                <option value="all" <%= filters.status === 'all' ? 'selected' : '' %>>All Status</option>
                                 <option value="active" <%= filters.status === 'active' ? 'selected' : '' %>>Active</option>
                                 <option value="banned" <%= filters.status === 'banned' ? 'selected' : '' %>>Banned</option>
                             </select>
@@ -121,13 +127,16 @@
                                             </td>
                                             <td>
                                                 <div class="btn-group btn-group-sm">
+                                                    <a href="/admin/users/<%= user._id %>/edit" class="btn btn-outline-primary" title="Edit User">
+                                                        <i class="fas fa-edit"></i>
+                                                    </a>
                                                     <% if (user.isBanned) { %>
-                                                        <button class="btn btn-outline-success" onclick="unbanUser('<%= user._id %>')">
-                                                            <i class="fas fa-check"></i> Unban
+                                                        <button class="btn btn-outline-success" onclick="unbanUser('<%= user._id %>')" title="Unban User">
+                                                            <i class="fas fa-check"></i>
                                                         </button>
                                                     <% } else { %>
-                                                        <button class="btn btn-outline-danger" onclick="banUser('<%= user._id %>')">
-                                                            <i class="fas fa-ban"></i> Ban
+                                                        <button class="btn btn-outline-danger" onclick="banUser('<%= user._id %>')" title="Ban User">
+                                                            <i class="fas fa-ban"></i>
                                                         </button>
                                                     <% } %>
                                                 </div>
@@ -229,4 +238,4 @@ async function unbanUser(userId) {
 }
 </script>
 
-<%- include('../partials/footer') %>
+<%- include('../partials/admin-footer') %>

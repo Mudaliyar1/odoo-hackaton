@@ -1,0 +1,143 @@
+<%- include('../partials/header') %>
+
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <!-- Header -->
+            <div class="text-center mb-5">
+                <h1 class="display-4 fw-bold text-primary">
+                    <i class="fas fa-envelope me-3"></i>
+                    Contact Us
+                </h1>
+                <p class="lead text-muted">Get in touch with our support team</p>
+            </div>
+
+            <!-- Success Message -->
+            <% if (typeof success !== 'undefined' && success) { %>
+                <div class="alert alert-success alert-dismissible fade show" role="alert">
+                    <i class="fas fa-check-circle me-2"></i>
+                    <%= success %>
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
+            <% } %>
+
+            <!-- Error Messages -->
+            <% if (typeof errors !== 'undefined' && errors.length > 0) { %>
+                <div class="alert alert-danger">
+                    <h6><i class="fas fa-exclamation-triangle me-2"></i>Please fix the following errors:</h6>
+                    <ul class="mb-0">
+                        <% errors.forEach(function(error) { %>
+                            <li><%= error.msg %></li>
+                        <% }); %>
+                    </ul>
+                </div>
+            <% } %>
+
+            <!-- Contact Form -->
+            <div class="card shadow-sm mb-4">
+                <div class="card-header bg-primary text-white">
+                    <h3 class="mb-0">
+                        <i class="fas fa-paper-plane me-2"></i>
+                        Send us a Message
+                    </h3>
+                </div>
+                <div class="card-body">
+                    <form method="POST" action="/contact">
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <label for="name" class="form-label">Name *</label>
+                                <input type="text"
+                                       class="form-control"
+                                       id="name"
+                                       name="name"
+                                       value="<%= typeof formData !== 'undefined' ? formData.name || '' : '' %>"
+                                       required>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="email" class="form-label">Email *</label>
+                                <input type="email"
+                                       class="form-control"
+                                       id="email"
+                                       name="email"
+                                       value="<%= typeof formData !== 'undefined' ? formData.email || '' : '' %>"
+                                       required>
+                            </div>
+                            <div class="col-12">
+                                <label for="subject" class="form-label">Subject *</label>
+                                <select class="form-select" id="subject" name="subject" required>
+                                    <option value="">Choose a topic...</option>
+                                    <option value="technical" <%= typeof formData !== 'undefined' && formData.subject === 'technical' ? 'selected' : '' %>>Technical Support</option>
+                                    <option value="account" <%= typeof formData !== 'undefined' && formData.subject === 'account' ? 'selected' : '' %>>Account Issues</option>
+                                    <option value="swap" <%= typeof formData !== 'undefined' && formData.subject === 'swap' ? 'selected' : '' %>>Swap Problems</option>
+                                    <option value="feedback" <%= typeof formData !== 'undefined' && formData.subject === 'feedback' ? 'selected' : '' %>>Feedback & Suggestions</option>
+                                    <option value="other" <%= typeof formData !== 'undefined' && formData.subject === 'other' ? 'selected' : '' %>>Other</option>
+                                </select>
+                            </div>
+                            <div class="col-12">
+                                <label for="message" class="form-label">Message *</label>
+                                <textarea class="form-control"
+                                          id="message"
+                                          name="message"
+                                          rows="5"
+                                          placeholder="Please describe your issue or question in detail..."
+                                          required><%= typeof formData !== 'undefined' ? formData.message || '' : '' %></textarea>
+                            </div>
+                            <div class="col-12">
+                                <button type="submit" class="btn btn-primary">
+                                    <i class="fas fa-paper-plane me-2"></i>
+                                    Send Message
+                                </button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Contact Information -->
+            <div class="row g-4">
+                <div class="col-md-4">
+                    <div class="card h-100 text-center">
+                        <div class="card-body">
+                            <div class="text-primary mb-3">
+                                <i class="fas fa-envelope fa-2x"></i>
+                            </div>
+                            <h5>Email Support</h5>
+                            <p class="text-muted">support@skillswap.com</p>
+                            <small class="text-muted">Response within 24 hours</small>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="card h-100 text-center">
+                        <div class="card-body">
+                            <div class="text-success mb-3">
+                                <i class="fas fa-clock fa-2x"></i>
+                            </div>
+                            <h5>Support Hours</h5>
+                            <p class="text-muted">Monday - Friday<br>9:00 AM - 6:00 PM EST</p>
+                            <small class="text-muted">Excluding holidays</small>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="card h-100 text-center">
+                        <div class="card-body">
+                            <div class="text-info mb-3">
+                                <i class="fas fa-question-circle fa-2x"></i>
+                            </div>
+                            <h5>Help Center</h5>
+                            <p class="text-muted">Find quick answers</p>
+                            <a href="/help" class="btn btn-outline-info btn-sm">
+                                Visit Help Center
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+<%- include('../partials/footer') %>

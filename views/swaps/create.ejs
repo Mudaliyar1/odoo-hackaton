@@ -155,6 +155,12 @@
                             </div>
                         </div>
 
+                        <!-- Help Message -->
+                        <div id="helpMessage" class="alert alert-info" style="display: none;">
+                            <i class="fas fa-info-circle me-2"></i>
+                            <span id="helpText"></span>
+                        </div>
+
                         <!-- Action Buttons -->
                         <div class="d-flex gap-2 justify-content-end">
                             <a href="/users/<%= recipient._id %>" class="btn btn-outline-secondary">
@@ -180,6 +186,8 @@ document.addEventListener('DOMContentLoaded', function() {
     const submitBtn = document.getElementById('submitBtn');
     const selectedOffered = document.getElementById('selectedOffered');
     const selectedWanted = document.getElementById('selectedWanted');
+    const helpMessage = document.getElementById('helpMessage');
+    const helpText = document.getElementById('helpText');
 
     function updatePreview() {
         // Update offered skills preview
@@ -209,7 +217,51 @@ document.addEventListener('DOMContentLoaded', function() {
         }
 
         // Enable/disable submit button
-        submitBtn.disabled = offeredSkills.length === 0 || wantedSkills.length === 0;
+        // Only require selections if the sections have options available
+        const hasOfferedOptions = offeredCheckboxes.length > 0;
+        const hasWantedOptions = wantedCheckboxes.length > 0;
+
+        let shouldDisable = false;
+
+        // If user has skills to offer, they must select at least one
+        if (hasOfferedOptions && offeredSkills.length === 0) {
+            shouldDisable = true;
+        }
+
+        // If recipient has skills to offer, user must select at least one they want
+        if (hasWantedOptions && wantedSkills.length === 0) {
+            shouldDisable = true;
+        }
+
+        // If neither user has skills, show a different message
+        if (!hasOfferedOptions && !hasWantedOptions) {
+            shouldDisable = true;
+        }
+
+        submitBtn.disabled = shouldDisable;
+
+        // Show helpful messages
+        if (shouldDisable) {
+            let message = '';
+            if (!hasOfferedOptions && !hasWantedOptions) {
+                message = 'Both you and the recipient need to add skills to your profiles before you can create a swap request.';
+            } else if (!hasOfferedOptions) {
+                message = 'You need to add skills to your "Skills I Can Teach" section before making a request.';
+            } else if (!hasWantedOptions) {
+                message = `${recipient.name || 'This user'} hasn't added any skills they can teach yet.`;
+            } else if (hasOfferedOptions && offeredSkills.length === 0) {
+                message = 'Please select at least one skill you can offer.';
+            } else if (hasWantedOptions && wantedSkills.length === 0) {
+                message = 'Please select at least one skill you want to learn.';
+            }
+
+            if (message) {
+                helpText.textContent = message;
+                helpMessage.style.display = 'block';
+            }
+        } else {
+            helpMessage.style.display = 'none';
+        }
     }
 
     // Add event listeners
