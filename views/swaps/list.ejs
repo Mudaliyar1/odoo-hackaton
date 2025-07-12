@@ -1,0 +1,237 @@
+<%- include('../partials/header') %>
+
+<div class="container py-4">
+    <!-- Page Header -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card bg-primary text-white border-0" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;">
+                <div class="card-body text-center py-4">
+                    <h1 class="h2 fw-bold mb-2">
+                        <i class="fas fa-handshake me-2"></i>
+                        My Skill Swaps
+                    </h1>
+                    <p class="mb-0 opacity-75">Manage your skill exchange requests and connections</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Filters -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card shadow-sm border-0">
+                <div class="card-body">
+                    <form method="GET" action="/swaps" class="row g-3 align-items-end">
+                        <div class="col-md-3">
+                            <label for="status" class="form-label">Status</label>
+                            <select class="form-select" id="status" name="status">
+                                <option value="all" <%= filters.status === 'all' ? 'selected' : '' %>>All Status</option>
+                                <option value="pending" <%= filters.status === 'pending' ? 'selected' : '' %>>Pending</option>
+                                <option value="accepted" <%= filters.status === 'accepted' ? 'selected' : '' %>>Accepted</option>
+                                <option value="completed" <%= filters.status === 'completed' ? 'selected' : '' %>>Completed</option>
+                                <option value="rejected" <%= filters.status === 'rejected' ? 'selected' : '' %>>Rejected</option>
+                                <option value="cancelled" <%= filters.status === 'cancelled' ? 'selected' : '' %>>Cancelled</option>
+                            </select>
+                        </div>
+                        <div class="col-md-3">
+                            <label for="type" class="form-label">Type</label>
+                            <select class="form-select" id="type" name="type">
+                                <option value="all" <%= filters.type === 'all' ? 'selected' : '' %>>All Types</option>
+                                <option value="incoming" <%= filters.type === 'incoming' ? 'selected' : '' %>>Incoming</option>
+                                <option value="outgoing" <%= filters.type === 'outgoing' ? 'selected' : '' %>>Outgoing</option>
+                            </select>
+                        </div>
+                        <div class="col-md-3">
+                            <button type="submit" class="btn btn-primary w-100">
+                                <i class="fas fa-filter me-1"></i>Filter
+                            </button>
+                        </div>
+                        <div class="col-md-3">
+                            <a href="/swaps" class="btn btn-outline-secondary w-100">
+                                <i class="fas fa-times me-1"></i>Clear
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Swaps List -->
+    <div class="row">
+        <div class="col-12">
+            <% if (swaps && swaps.length > 0) { %>
+                <div class="row g-4">
+                    <% swaps.forEach(function(swap) { %>
+                        <div class="col-md-6 col-lg-4">
+                            <div class="card h-100 border-0 shadow-sm">
+                                <div class="card-header d-flex justify-content-between align-items-center">
+                                    <span class="badge bg-<%= 
+                                        swap.status === 'pending' ? 'warning' :
+                                        swap.status === 'accepted' ? 'info' :
+                                        swap.status === 'completed' ? 'success' :
+                                        swap.status === 'rejected' ? 'danger' :
+                                        'secondary'
+                                    %> text-capitalize">
+                                        <%= swap.status %>
+                                    </span>
+                                    <small class="text-muted">
+                                        <%= new Date(swap.createdAt).toLocaleDateString() %>
+                                    </small>
+                                </div>
+                                <div class="card-body">
+                                    <!-- Partner Info -->
+                                    <%
+                                        const isRequester = swap.requester._id.toString() === currentUserId.toString();
+                                        const partner = isRequester ? swap.recipient : swap.requester;
+                                    %>
+                                    <div class="d-flex align-items-center mb-3">
+                                        <% if (partner.profilePhoto) { %>
+                                            <img src="/uploads/<%= partner.profilePhoto %>" alt="<%= partner.name %>" class="rounded-circle me-3" width="50" height="50" style="object-fit: cover;">
+                                        <% } else { %>
+                                            <div class="bg-secondary text-white rounded-circle d-flex align-items-center justify-content-center me-3" style="width: 50px; height: 50px;">
+                                                <i class="fas fa-user"></i>
+                                            </div>
+                                        <% } %>
+                                        <div>
+                                            <h6 class="fw-bold mb-1"><%= partner.name %></h6>
+                                            <small class="text-muted">
+                                                <%= isRequester ? 'Incoming from' : 'Outgoing to' %>
+                                            </small>
+                                        </div>
+                                    </div>
+
+                                    <!-- Skills -->
+                                    <div class="mb-3">
+                                        <h6 class="small fw-bold text-success mb-2">Skills Offered:</h6>
+                                        <div class="d-flex flex-wrap gap-1 mb-2">
+                                            <% swap.skillsOffered.forEach(function(skill) { %>
+                                                <span class="badge bg-success-subtle text-success"><%= skill %></span>
+                                            <% }); %>
+                                        </div>
+                                        
+                                        <h6 class="small fw-bold text-info mb-2">Skills Wanted:</h6>
+                                        <div class="d-flex flex-wrap gap-1">
+                                            <% swap.skillsWanted.forEach(function(skill) { %>
+                                                <span class="badge bg-info-subtle text-info"><%= skill %></span>
+                                            <% }); %>
+                                        </div>
+                                    </div>
+
+                                    <!-- Message Preview -->
+                                    <% if (swap.message) { %>
+                                        <div class="mb-3">
+                                            <small class="text-muted">
+                                                "<%= swap.message.length > 100 ? swap.message.substring(0, 100) + '...' : swap.message %>"
+                                            </small>
+                                        </div>
+                                    <% } %>
+                                </div>
+                                <div class="card-footer bg-transparent">
+                                    <div class="d-flex gap-2">
+                                        <a href="/swaps/<%= swap._id %>" class="btn btn-primary btn-sm flex-fill">
+                                            <i class="fas fa-eye me-1"></i>View Details
+                                        </a>
+                                        <% if (swap.status === 'pending' && !isRequester) { %>
+                                            <div class="btn-group" role="group">
+                                                <form action="/swaps/<%= swap._id %>/accept" method="POST" class="d-inline">
+                                                    <button type="submit" class="btn btn-success btn-sm">
+                                                        <i class="fas fa-check"></i>
+                                                    </button>
+                                                </form>
+                                                <button type="button" class="btn btn-danger btn-sm" data-bs-toggle="modal" data-bs-target="#rejectModal<%= swap._id %>">
+                                                    <i class="fas fa-times"></i>
+                                                </button>
+                                            </div>
+                                        <% } %>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Reject Modal -->
+                        <% if (swap.status === 'pending' && !isRequester) { %>
+                            <div class="modal fade" id="rejectModal<%= swap._id %>" tabindex="-1">
+                                <div class="modal-dialog">
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <h5 class="modal-title">Reject Swap Request</h5>
+                                            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                                        </div>
+                                        <form action="/swaps/<%= swap._id %>/reject" method="POST">
+                                            <div class="modal-body">
+                                                <div class="mb-3">
+                                                    <label for="reason<%= swap._id %>" class="form-label">Reason (optional)</label>
+                                                    <textarea class="form-control" id="reason<%= swap._id %>" name="reason" rows="3" placeholder="Let them know why you're declining..."></textarea>
+                                                </div>
+                                            </div>
+                                            <div class="modal-footer">
+                                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                                                <button type="submit" class="btn btn-danger">Reject Request</button>
+                                            </div>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+                        <% } %>
+                    <% }); %>
+                </div>
+
+                <!-- Pagination -->
+                <% if (pagination.total > 1) { %>
+                    <nav class="mt-5">
+                        <ul class="pagination justify-content-center">
+                            <% if (pagination.hasPrev) { %>
+                                <li class="page-item">
+                                    <a class="page-link" href="?page=<%= pagination.current - 1 %>&status=<%= filters.status %>&type=<%= filters.type %>">
+                                        <i class="fas fa-chevron-left"></i>
+                                    </a>
+                                </li>
+                            <% } %>
+                            
+                            <% for (let i = Math.max(1, pagination.current - 2); i <= Math.min(pagination.total, pagination.current + 2); i++) { %>
+                                <li class="page-item <%= i === pagination.current ? 'active' : '' %>">
+                                    <a class="page-link" href="?page=<%= i %>&status=<%= filters.status %>&type=<%= filters.type %>"><%= i %></a>
+                                </li>
+                            <% } %>
+                            
+                            <% if (pagination.hasNext) { %>
+                                <li class="page-item">
+                                    <a class="page-link" href="?page=<%= pagination.current + 1 %>&status=<%= filters.status %>&type=<%= filters.type %>">
+                                        <i class="fas fa-chevron-right"></i>
+                                    </a>
+                                </li>
+                            <% } %>
+                        </ul>
+                    </nav>
+                <% } %>
+            <% } else { %>
+                <!-- Empty State -->
+                <div class="text-center py-5">
+                    <div class="mb-4">
+                        <i class="fas fa-handshake fs-1 text-muted"></i>
+                    </div>
+                    <h4 class="text-muted mb-3">No skill swaps found</h4>
+                    <p class="text-muted mb-4">
+                        <% if (filters.status !== 'all' || filters.type !== 'all') { %>
+                            Try adjusting your filters or
+                        <% } %>
+                        Start by finding people to swap skills with!
+                    </p>
+                    <div class="d-flex gap-2 justify-content-center">
+                        <a href="/users/search" class="btn btn-primary">
+                            <i class="fas fa-search me-2"></i>Find Skills
+                        </a>
+                        <% if (filters.status !== 'all' || filters.type !== 'all') { %>
+                            <a href="/swaps" class="btn btn-outline-secondary">
+                                <i class="fas fa-times me-2"></i>Clear Filters
+                            </a>
+                        <% } %>
+                    </div>
+                </div>
+            <% } %>
+        </div>
+    </div>
+</div>
+
+<%- include('../partials/footer') %>

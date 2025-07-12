@@ -1,0 +1,293 @@
+<%- include('../partials/header') %>
+
+<div class="container py-4">
+    <div class="row">
+        <!-- Profile Form -->
+        <div class="col-lg-8">
+            <div class="card shadow-sm border-0">
+                <div class="card-header bg-primary text-white">
+                    <h3 class="mb-0">
+                        <i class="fas fa-user-edit me-2"></i>
+                        My Profile
+                    </h3>
+                </div>
+                <div class="card-body p-4">
+                    <% if (errors && errors.length > 0) { %>
+                        <div class="alert alert-danger">
+                            <ul class="list-unstyled mb-0">
+                                <% errors.forEach(function(error) { %>
+                                    <li><i class="fas fa-exclamation-circle me-2"></i><%= error.msg %></li>
+                                <% }); %>
+                            </ul>
+                        </div>
+                    <% } %>
+
+                    <% if (success) { %>
+                        <div class="alert alert-success">
+                            <i class="fas fa-check-circle me-2"></i><%= success %>
+                        </div>
+                    <% } %>
+
+                    <form action="/users/profile" method="POST" enctype="multipart/form-data">
+                        <!-- Profile Photo -->
+                        <div class="row mb-4">
+                            <div class="col-md-3 text-center">
+                                <div class="mb-3">
+                                    <% if (profile.profilePhoto) { %>
+                                        <img src="/uploads/<%= profile.profilePhoto %>" alt="Profile" class="rounded-circle img-fluid" width="120" height="120" style="object-fit: cover; border: 4px solid #e9ecef;">
+                                    <% } else { %>
+                                        <div class="bg-secondary text-white rounded-circle d-inline-flex align-items-center justify-content-center" style="width: 120px; height: 120px;">
+                                            <i class="fas fa-user fs-1"></i>
+                                        </div>
+                                    <% } %>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="profilePhoto" class="form-label">Profile Photo</label>
+                                    <input type="file" class="form-control" id="profilePhoto" name="profilePhoto" accept="image/*">
+                                    <div class="form-text">Max size: 5MB. Formats: JPG, PNG, GIF</div>
+                                </div>
+                            </div>
+                            <div class="col-md-9">
+                                <!-- Basic Info -->
+                                <div class="row">
+                                    <div class="col-md-6 mb-3">
+                                        <label for="name" class="form-label">Full Name *</label>
+                                        <input type="text" class="form-control" id="name" name="name" value="<%= profile.name %>" required>
+                                    </div>
+                                    <div class="col-md-6 mb-3">
+                                        <label for="location" class="form-label">Location</label>
+                                        <input type="text" class="form-control" id="location" name="location" value="<%= profile.location || '' %>" placeholder="City, Country">
+                                    </div>
+                                </div>
+                                
+                                <!-- Bio -->
+                                <div class="mb-3">
+                                    <label for="bio" class="form-label">Bio</label>
+                                    <textarea class="form-control" id="bio" name="bio" rows="3" placeholder="Tell others about yourself..."><%= profile.bio || '' %></textarea>
+                                    <div class="form-text">Max 500 characters</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Skills Section -->
+                        <div class="row">
+                            <div class="col-md-6 mb-4">
+                                <label class="form-label">Skills I Can Teach</label>
+                                <div class="border rounded p-3 bg-light">
+                                    <div id="skillsOfferedContainer">
+                                        <% if (profile.skillsOffered && profile.skillsOffered.length > 0) { %>
+                                            <% profile.skillsOffered.forEach(function(skill, index) { %>
+                                                <div class="input-group mb-2">
+                                                    <input type="text" class="form-control" name="skillsOffered" value="<%= skill %>">
+                                                    <button type="button" class="btn btn-outline-danger btn-sm" onclick="removeSkill(this)">
+                                                        <i class="fas fa-times"></i>
+                                                    </button>
+                                                </div>
+                                            <% }); %>
+                                        <% } %>
+                                    </div>
+                                    <button type="button" class="btn btn-outline-primary btn-sm" onclick="addSkill('skillsOfferedContainer', 'skillsOffered')">
+                                        <i class="fas fa-plus me-1"></i>Add Skill
+                                    </button>
+                                </div>
+                            </div>
+                            
+                            <div class="col-md-6 mb-4">
+                                <label class="form-label">Skills I Want to Learn</label>
+                                <div class="border rounded p-3 bg-light">
+                                    <div id="skillsWantedContainer">
+                                        <% if (profile.skillsWanted && profile.skillsWanted.length > 0) { %>
+                                            <% profile.skillsWanted.forEach(function(skill, index) { %>
+                                                <div class="input-group mb-2">
+                                                    <input type="text" class="form-control" name="skillsWanted" value="<%= skill %>">
+                                                    <button type="button" class="btn btn-outline-danger btn-sm" onclick="removeSkill(this)">
+                                                        <i class="fas fa-times"></i>
+                                                    </button>
+                                                </div>
+                                            <% }); %>
+                                        <% } %>
+                                    </div>
+                                    <button type="button" class="btn btn-outline-primary btn-sm" onclick="addSkill('skillsWantedContainer', 'skillsWanted')">
+                                        <i class="fas fa-plus me-1"></i>Add Skill
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Availability -->
+                        <div class="mb-4">
+                            <label class="form-label">Availability</label>
+                            <div class="row">
+                                <div class="col-md-4">
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" id="weekdays" name="availability.weekdays" <%= profile.availability && profile.availability.weekdays ? 'checked' : '' %>>
+                                        <label class="form-check-label" for="weekdays">
+                                            <i class="fas fa-calendar-week me-1"></i>Weekdays
+                                        </label>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" id="weekends" name="availability.weekends" <%= profile.availability && profile.availability.weekends ? 'checked' : '' %>>
+                                        <label class="form-check-label" for="weekends">
+                                            <i class="fas fa-calendar-alt me-1"></i>Weekends
+                                        </label>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" id="evenings" name="availability.evenings" <%= profile.availability && profile.availability.evenings ? 'checked' : '' %>>
+                                        <label class="form-check-label" for="evenings">
+                                            <i class="fas fa-moon me-1"></i>Evenings
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Privacy Settings -->
+                        <div class="mb-4">
+                            <div class="form-check form-switch">
+                                <input class="form-check-input" type="checkbox" id="isPublic" name="isPublic" <%= profile.isPublic ? 'checked' : '' %>>
+                                <label class="form-check-label" for="isPublic">
+                                    <i class="fas fa-globe me-1"></i>Make my profile public
+                                </label>
+                                <div class="form-text">When enabled, other users can find and view your profile</div>
+                            </div>
+                        </div>
+
+                        <!-- Submit Buttons -->
+                        <div class="d-flex gap-2">
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-save me-2"></i>Save Changes
+                            </button>
+                            <a href="/users/dashboard" class="btn btn-outline-secondary">
+                                <i class="fas fa-arrow-left me-2"></i>Back to Dashboard
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- Profile Stats Sidebar -->
+        <div class="col-lg-4">
+            <div class="card shadow-sm border-0 mb-4">
+                <div class="card-header bg-success text-white">
+                    <h5 class="mb-0">
+                        <i class="fas fa-star me-2"></i>
+                        My Rating
+                    </h5>
+                </div>
+                <div class="card-body text-center">
+                    <div class="display-6 fw-bold text-warning mb-2">
+                        <%= feedbackStats.average || '0.0' %>
+                        <small class="fs-6 text-muted">/ 5.0</small>
+                    </div>
+                    <div class="mb-2">
+                        <% for (let i = 1; i <= 5; i++) { %>
+                            <i class="fas fa-star <%= feedbackStats.average >= i ? 'text-warning' : 'text-muted' %>"></i>
+                        <% } %>
+                    </div>
+                    <p class="text-muted mb-0">Based on <%= feedbackStats.total %> review<%= feedbackStats.total !== 1 ? 's' : '' %></p>
+                </div>
+            </div>
+
+            <!-- Quick Actions -->
+            <div class="card shadow-sm border-0">
+                <div class="card-header bg-info text-white">
+                    <h5 class="mb-0">
+                        <i class="fas fa-bolt me-2"></i>
+                        Quick Actions
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="d-grid gap-2">
+                        <a href="/users/search" class="btn btn-outline-primary">
+                            <i class="fas fa-search me-2"></i>Find Skills
+                        </a>
+                        <a href="/swaps" class="btn btn-outline-success">
+                            <i class="fas fa-handshake me-2"></i>My Swaps
+                        </a>
+                        <button type="button" class="btn btn-outline-danger" data-bs-toggle="modal" data-bs-target="#deleteAccountModal">
+                            <i class="fas fa-trash me-2"></i>Delete Account
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Delete Account Modal -->
+<div class="modal fade" id="deleteAccountModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header bg-danger text-white">
+                <h5 class="modal-title">Delete Account</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <p class="fw-bold">Are you sure you want to delete your account?</p>
+                <p class="text-muted">This action cannot be undone. All your data, including:</p>
+                <ul class="text-muted">
+                    <li>Profile information</li>
+                    <li>Skill swap history</li>
+                    <li>Ratings and feedback</li>
+                </ul>
+                <p class="text-muted">will be permanently deleted.</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <form action="/users/account?_method=DELETE" method="POST" class="d-inline">
+                    <button type="submit" class="btn btn-danger">Delete My Account</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+function addSkill(containerId, fieldName) {
+    const container = document.getElementById(containerId);
+    const skillInputs = container.querySelectorAll('input[name="' + fieldName + '"]');
+    
+    if (skillInputs.length >= 20) {
+        alert('Maximum 20 skills allowed');
+        return;
+    }
+    
+    const div = document.createElement('div');
+    div.className = 'input-group mb-2';
+    div.innerHTML = `
+        <input type="text" class="form-control" name="${fieldName}" placeholder="Enter a skill">
+        <button type="button" class="btn btn-outline-danger btn-sm" onclick="removeSkill(this)">
+            <i class="fas fa-times"></i>
+        </button>
+    `;
+    
+    container.appendChild(div);
+    div.querySelector('input').focus();
+}
+
+function removeSkill(button) {
+    button.closest('.input-group').remove();
+}
+
+// Image preview
+document.getElementById('profilePhoto').addEventListener('change', function(e) {
+    const file = e.target.files[0];
+    if (file) {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            const img = document.querySelector('img[alt="Profile"], .rounded-circle');
+            if (img && img.tagName === 'IMG') {
+                img.src = e.target.result;
+            }
+        };
+        reader.readAsDataURL(file);
+    }
+});
+</script>
+
+<%- include('../partials/footer') %>

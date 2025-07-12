@@ -1,0 +1,221 @@
+<%- include('../partials/header') %>
+
+<div class="container py-4">
+    <!-- Search Header -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card bg-primary text-white border-0" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;">
+                <div class="card-body text-center py-5">
+                    <h1 class="display-5 fw-bold mb-3">Find Your Perfect Skill Partner</h1>
+                    <p class="lead mb-0">Discover people who can teach you new skills or learn from what you offer</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Search Filters -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card shadow-sm border-0">
+                <div class="card-body">
+                    <form method="GET" action="/users/search" class="row g-3">
+                        <div class="col-md-4">
+                            <label for="q" class="form-label">Search</label>
+                            <input type="text" class="form-control" id="q" name="q" value="<%= query.q || '' %>" placeholder="Search by name, skills, or location">
+                        </div>
+                        <div class="col-md-3">
+                            <label for="skill" class="form-label">Specific Skill</label>
+                            <input type="text" class="form-control" id="skill" name="skill" value="<%= query.skill || '' %>" placeholder="e.g., JavaScript, Guitar">
+                        </div>
+                        <div class="col-md-3">
+                            <label class="form-label">Availability</label>
+                            <div class="d-flex gap-2">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" id="weekdays" name="availability" value="weekdays" <%= query.availability && query.availability.includes('weekdays') ? 'checked' : '' %>>
+                                    <label class="form-check-label small" for="weekdays">Weekdays</label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" id="weekends" name="availability" value="weekends" <%= query.availability && query.availability.includes('weekends') ? 'checked' : '' %>>
+                                    <label class="form-check-label small" for="weekends">Weekends</label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" id="evenings" name="availability" value="evenings" <%= query.availability && query.availability.includes('evenings') ? 'checked' : '' %>>
+                                    <label class="form-check-label small" for="evenings">Evenings</label>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-2 d-flex align-items-end">
+                            <button type="submit" class="btn btn-primary w-100">
+                                <i class="fas fa-search me-1"></i>Search
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Search Results -->
+    <div class="row">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <h3 class="mb-0">
+                    <i class="fas fa-users me-2 text-primary"></i>
+                    Search Results
+                    <span class="badge bg-primary ms-2"><%= users.length %> found</span>
+                </h3>
+                <% if (query.q || query.skill || query.availability) { %>
+                    <a href="/users/search" class="btn btn-outline-secondary btn-sm">
+                        <i class="fas fa-times me-1"></i>Clear Filters
+                    </a>
+                <% } %>
+            </div>
+
+            <% if (users && users.length > 0) { %>
+                <div class="row g-4">
+                    <% users.forEach(function(user) { %>
+                        <div class="col-md-6 col-lg-4">
+                            <div class="card h-100 border-0 shadow-sm">
+                                <div class="card-body text-center p-4">
+                                    <!-- Profile Photo -->
+                                    <div class="mb-3">
+                                        <% if (user.profilePhoto) { %>
+                                            <img src="/uploads/<%= user.profilePhoto %>" alt="<%= user.name %>" class="rounded-circle" width="80" height="80" style="object-fit: cover; border: 3px solid #e9ecef;">
+                                        <% } else { %>
+                                            <div class="bg-secondary text-white rounded-circle d-inline-flex align-items-center justify-content-center" style="width: 80px; height: 80px;">
+                                                <i class="fas fa-user fs-2"></i>
+                                            </div>
+                                        <% } %>
+                                    </div>
+
+                                    <!-- User Info -->
+                                    <h5 class="fw-bold mb-2"><%= user.name %></h5>
+                                    
+                                    <% if (user.location) { %>
+                                        <p class="text-muted small mb-2">
+                                            <i class="fas fa-map-marker-alt me-1"></i>
+                                            <%= user.location %>
+                                        </p>
+                                    <% } %>
+
+                                    <!-- Rating -->
+                                    <% if (user.rating && user.rating.count > 0) { %>
+                                        <div class="mb-3">
+                                            <div class="d-flex justify-content-center align-items-center">
+                                                <% for (let i = 1; i <= 5; i++) { %>
+                                                    <i class="fas fa-star <%= user.rating.average >= i ? 'text-warning' : 'text-muted' %> small"></i>
+                                                <% } %>
+                                                <span class="ms-2 small text-muted">(<%= user.rating.count %>)</span>
+                                            </div>
+                                        </div>
+                                    <% } %>
+
+                                    <!-- Skills Offered -->
+                                    <% if (user.skillsOffered && user.skillsOffered.length > 0) { %>
+                                        <div class="mb-3">
+                                            <h6 class="small fw-bold text-success mb-2">Can Teach:</h6>
+                                            <div class="d-flex flex-wrap justify-content-center gap-1">
+                                                <% user.skillsOffered.slice(0, 3).forEach(function(skill) { %>
+                                                    <span class="badge bg-success-subtle text-success"><%= skill %></span>
+                                                <% }); %>
+                                                <% if (user.skillsOffered.length > 3) { %>
+                                                    <span class="badge bg-secondary">+<%= user.skillsOffered.length - 3 %> more</span>
+                                                <% } %>
+                                            </div>
+                                        </div>
+                                    <% } %>
+
+                                    <!-- Skills Wanted -->
+                                    <% if (user.skillsWanted && user.skillsWanted.length > 0) { %>
+                                        <div class="mb-3">
+                                            <h6 class="small fw-bold text-info mb-2">Wants to Learn:</h6>
+                                            <div class="d-flex flex-wrap justify-content-center gap-1">
+                                                <% user.skillsWanted.slice(0, 3).forEach(function(skill) { %>
+                                                    <span class="badge bg-info-subtle text-info"><%= skill %></span>
+                                                <% }); %>
+                                                <% if (user.skillsWanted.length > 3) { %>
+                                                    <span class="badge bg-secondary">+<%= user.skillsWanted.length - 3 %> more</span>
+                                                <% } %>
+                                            </div>
+                                        </div>
+                                    <% } %>
+
+                                    <!-- Availability -->
+                                    <% if (user.availability) { %>
+                                        <div class="mb-3">
+                                            <h6 class="small fw-bold text-primary mb-2">Available:</h6>
+                                            <div class="d-flex justify-content-center gap-1">
+                                                <% if (user.availability.weekdays) { %>
+                                                    <span class="badge bg-primary-subtle text-primary">Weekdays</span>
+                                                <% } %>
+                                                <% if (user.availability.weekends) { %>
+                                                    <span class="badge bg-primary-subtle text-primary">Weekends</span>
+                                                <% } %>
+                                                <% if (user.availability.evenings) { %>
+                                                    <span class="badge bg-primary-subtle text-primary">Evenings</span>
+                                                <% } %>
+                                            </div>
+                                        </div>
+                                    <% } %>
+
+                                    <!-- Action Buttons -->
+                                    <div class="d-flex gap-2 justify-content-center">
+                                        <a href="/users/<%= user._id %>" class="btn btn-outline-primary btn-sm">
+                                            <i class="fas fa-eye me-1"></i>View Profile
+                                        </a>
+                                        <a href="/swaps/create/<%= user._id %>" class="btn btn-primary btn-sm">
+                                            <i class="fas fa-handshake me-1"></i>Request Swap
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    <% }); %>
+                </div>
+
+                <!-- Pagination -->
+                <% if (pagination.total > 1) { %>
+                    <nav class="mt-5">
+                        <ul class="pagination justify-content-center">
+                            <% if (pagination.hasPrev) { %>
+                                <li class="page-item">
+                                    <a class="page-link" href="?page=<%= pagination.current - 1 %>&<%= new URLSearchParams(query).toString() %>">
+                                        <i class="fas fa-chevron-left"></i>
+                                    </a>
+                                </li>
+                            <% } %>
+                            
+                            <% for (let i = Math.max(1, pagination.current - 2); i <= Math.min(pagination.total, pagination.current + 2); i++) { %>
+                                <li class="page-item <%= i === pagination.current ? 'active' : '' %>">
+                                    <a class="page-link" href="?page=<%= i %>&<%= new URLSearchParams(query).toString() %>"><%= i %></a>
+                                </li>
+                            <% } %>
+                            
+                            <% if (pagination.hasNext) { %>
+                                <li class="page-item">
+                                    <a class="page-link" href="?page=<%= pagination.current + 1 %>&<%= new URLSearchParams(query).toString() %>">
+                                        <i class="fas fa-chevron-right"></i>
+                                    </a>
+                                </li>
+                            <% } %>
+                        </ul>
+                    </nav>
+                <% } %>
+            <% } else { %>
+                <!-- No Results -->
+                <div class="text-center py-5">
+                    <div class="mb-4">
+                        <i class="fas fa-search fs-1 text-muted"></i>
+                    </div>
+                    <h4 class="text-muted mb-3">No users found</h4>
+                    <p class="text-muted mb-4">Try adjusting your search criteria or browse all users</p>
+                    <a href="/users/search" class="btn btn-primary">
+                        <i class="fas fa-users me-2"></i>Browse All Users
+                    </a>
+                </div>
+            <% } %>
+        </div>
+    </div>
+</div>
+
+<%- include('../partials/footer') %>

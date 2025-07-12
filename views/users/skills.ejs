@@ -1,0 +1,273 @@
+<%- include('../partials/header') %>
+
+<div class="container py-4">
+    <div class="row justify-content-center">
+        <div class="col-lg-10">
+            <!-- Page Header -->
+            <div class="card bg-primary text-white border-0 mb-4" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;">
+                <div class="card-body text-center py-5">
+                    <h1 class="display-5 fw-bold mb-3">
+                        <i class="fas fa-graduation-cap me-2"></i>
+                        Manage Your Skills
+                    </h1>
+                    <p class="lead mb-0">Add the skills you can teach and what you'd like to learn</p>
+                </div>
+            </div>
+
+            <!-- Error Messages -->
+            <% if (errors && errors.length > 0) { %>
+                <div class="alert alert-danger">
+                    <ul class="list-unstyled mb-0">
+                        <% errors.forEach(function(error) { %>
+                            <li><i class="fas fa-exclamation-circle me-2"></i><%= error.msg %></li>
+                        <% }); %>
+                    </ul>
+                </div>
+            <% } %>
+
+            <!-- Success Message -->
+            <% if (success) { %>
+                <div class="alert alert-success">
+                    <i class="fas fa-check-circle me-2"></i><%= success %>
+                </div>
+            <% } %>
+
+            <form action="/users/skills" method="POST">
+                <div class="row">
+                    <!-- Skills I Can Teach -->
+                    <div class="col-lg-6 mb-4">
+                        <div class="card h-100 border-success shadow-sm">
+                            <div class="card-header bg-success text-white">
+                                <h4 class="mb-0">
+                                    <i class="fas fa-chalkboard-teacher me-2"></i>
+                                    Skills I Can Teach
+                                </h4>
+                            </div>
+                            <div class="card-body">
+                                <p class="text-muted mb-4">
+                                    <i class="fas fa-info-circle me-1"></i>
+                                    Add skills you're confident teaching others. These could be professional skills, hobbies, languages, or any expertise you have.
+                                </p>
+
+                                <!-- Current Skills -->
+                                <div class="mb-4">
+                                    <h6 class="fw-bold mb-3">Current Skills:</h6>
+                                    <div id="skillsOfferedContainer">
+                                        <% if (user.skillsOffered && user.skillsOffered.length > 0) { %>
+                                            <% user.skillsOffered.forEach(function(skill, index) { %>
+                                                <div class="input-group mb-2">
+                                                    <input type="text" class="form-control" name="skillsOffered" value="<%= skill %>" placeholder="Enter a skill you can teach">
+                                                    <button type="button" class="btn btn-outline-danger" onclick="removeSkill(this)">
+                                                        <i class="fas fa-times"></i>
+                                                    </button>
+                                                </div>
+                                            <% }); %>
+                                        <% } else { %>
+                                            <div class="input-group mb-2">
+                                                <input type="text" class="form-control" name="skillsOffered" placeholder="Enter a skill you can teach">
+                                                <button type="button" class="btn btn-outline-danger" onclick="removeSkill(this)">
+                                                    <i class="fas fa-times"></i>
+                                                </button>
+                                            </div>
+                                        <% } %>
+                                    </div>
+                                    <button type="button" class="btn btn-success btn-sm" onclick="addSkill('skillsOfferedContainer', 'skillsOffered', 'Enter a skill you can teach')">
+                                        <i class="fas fa-plus me-1"></i>Add Another Skill
+                                    </button>
+                                </div>
+
+                                <!-- Skill Suggestions -->
+                                <div class="mb-3">
+                                    <h6 class="fw-bold mb-2">Popular Skills:</h6>
+                                    <div class="d-flex flex-wrap gap-1">
+                                        <% const popularSkills = ['JavaScript', 'Python', 'Guitar', 'Photography', 'Cooking', 'Spanish', 'Graphic Design', 'Marketing', 'Yoga', 'Writing']; %>
+                                        <% popularSkills.forEach(function(skill) { %>
+                                            <button type="button" class="btn btn-outline-success btn-sm skill-suggestion" data-container="skillsOfferedContainer" data-name="skillsOffered">
+                                                <%= skill %>
+                                            </button>
+                                        <% }); %>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Skills I Want to Learn -->
+                    <div class="col-lg-6 mb-4">
+                        <div class="card h-100 border-info shadow-sm">
+                            <div class="card-header bg-info text-white">
+                                <h4 class="mb-0">
+                                    <i class="fas fa-book-reader me-2"></i>
+                                    Skills I Want to Learn
+                                </h4>
+                            </div>
+                            <div class="card-body">
+                                <p class="text-muted mb-4">
+                                    <i class="fas fa-lightbulb me-1"></i>
+                                    Add skills you're interested in learning. This helps others find you when they can teach these skills.
+                                </p>
+
+                                <!-- Current Skills -->
+                                <div class="mb-4">
+                                    <h6 class="fw-bold mb-3">Skills I Want:</h6>
+                                    <div id="skillsWantedContainer">
+                                        <% if (user.skillsWanted && user.skillsWanted.length > 0) { %>
+                                            <% user.skillsWanted.forEach(function(skill, index) { %>
+                                                <div class="input-group mb-2">
+                                                    <input type="text" class="form-control" name="skillsWanted" value="<%= skill %>" placeholder="Enter a skill you want to learn">
+                                                    <button type="button" class="btn btn-outline-danger" onclick="removeSkill(this)">
+                                                        <i class="fas fa-times"></i>
+                                                    </button>
+                                                </div>
+                                            <% }); %>
+                                        <% } else { %>
+                                            <div class="input-group mb-2">
+                                                <input type="text" class="form-control" name="skillsWanted" placeholder="Enter a skill you want to learn">
+                                                <button type="button" class="btn btn-outline-danger" onclick="removeSkill(this)">
+                                                    <i class="fas fa-times"></i>
+                                                </button>
+                                            </div>
+                                        <% } %>
+                                    </div>
+                                    <button type="button" class="btn btn-info btn-sm" onclick="addSkill('skillsWantedContainer', 'skillsWanted', 'Enter a skill you want to learn')">
+                                        <i class="fas fa-plus me-1"></i>Add Another Skill
+                                    </button>
+                                </div>
+
+                                <!-- Skill Suggestions -->
+                                <div class="mb-3">
+                                    <h6 class="fw-bold mb-2">Popular Learning Goals:</h6>
+                                    <div class="d-flex flex-wrap gap-1">
+                                        <% const learningSkills = ['React', 'Machine Learning', 'Piano', 'French', 'Digital Art', 'Public Speaking', 'Data Analysis', 'Meditation', 'Video Editing', 'Entrepreneurship']; %>
+                                        <% learningSkills.forEach(function(skill) { %>
+                                            <button type="button" class="btn btn-outline-info btn-sm skill-suggestion" data-container="skillsWantedContainer" data-name="skillsWanted">
+                                                <%= skill %>
+                                            </button>
+                                        <% }); %>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Action Buttons -->
+                <div class="row">
+                    <div class="col-12">
+                        <div class="card shadow-sm border-0">
+                            <div class="card-body text-center">
+                                <h5 class="mb-3">Ready to start skill swapping?</h5>
+                                <div class="d-flex gap-3 justify-content-center flex-wrap">
+                                    <button type="submit" class="btn btn-primary btn-lg">
+                                        <i class="fas fa-save me-2"></i>
+                                        Save My Skills
+                                    </button>
+                                    <a href="/users/dashboard" class="btn btn-outline-secondary btn-lg">
+                                        <i class="fas fa-arrow-left me-2"></i>
+                                        Back to Dashboard
+                                    </a>
+                                </div>
+                                <p class="text-muted mt-3 mb-0">
+                                    <small>
+                                        <i class="fas fa-shield-alt me-1"></i>
+                                        Your skills are visible to other users to help with matching
+                                    </small>
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+function addSkill(containerId, fieldName, placeholder) {
+    const container = document.getElementById(containerId);
+    const skillInputs = container.querySelectorAll(`input[name="${fieldName}"]`);
+    
+    if (skillInputs.length >= 20) {
+        alert('Maximum 20 skills allowed');
+        return;
+    }
+    
+    const div = document.createElement('div');
+    div.className = 'input-group mb-2';
+    div.innerHTML = `
+        <input type="text" class="form-control" name="${fieldName}" placeholder="${placeholder}">
+        <button type="button" class="btn btn-outline-danger" onclick="removeSkill(this)">
+            <i class="fas fa-times"></i>
+        </button>
+    `;
+    
+    container.appendChild(div);
+    div.querySelector('input').focus();
+}
+
+function removeSkill(button) {
+    const container = button.closest('.input-group').parentNode;
+    const inputs = container.querySelectorAll('input');
+    
+    if (inputs.length > 1) {
+        button.closest('.input-group').remove();
+    } else {
+        // Clear the input instead of removing if it's the last one
+        button.closest('.input-group').querySelector('input').value = '';
+    }
+}
+
+// Handle skill suggestions
+document.addEventListener('DOMContentLoaded', function() {
+    const suggestions = document.querySelectorAll('.skill-suggestion');
+    
+    suggestions.forEach(button => {
+        button.addEventListener('click', function() {
+            const containerId = this.dataset.container;
+            const fieldName = this.dataset.name;
+            const skillName = this.textContent.trim();
+            const container = document.getElementById(containerId);
+            
+            // Check if skill already exists
+            const existingInputs = container.querySelectorAll('input');
+            const exists = Array.from(existingInputs).some(input => 
+                input.value.toLowerCase() === skillName.toLowerCase()
+            );
+            
+            if (exists) {
+                alert('This skill is already added!');
+                return;
+            }
+            
+            // Find empty input or add new one
+            const emptyInput = Array.from(existingInputs).find(input => !input.value.trim());
+            
+            if (emptyInput) {
+                emptyInput.value = skillName;
+                emptyInput.focus();
+            } else {
+                // Add new input with the skill
+                const div = document.createElement('div');
+                div.className = 'input-group mb-2';
+                div.innerHTML = `
+                    <input type="text" class="form-control" name="${fieldName}" value="${skillName}">
+                    <button type="button" class="btn btn-outline-danger" onclick="removeSkill(this)">
+                        <i class="fas fa-times"></i>
+                    </button>
+                `;
+                container.appendChild(div);
+            }
+            
+            // Highlight the button briefly
+            this.classList.add('btn-success');
+            this.classList.remove('btn-outline-success', 'btn-outline-info');
+            setTimeout(() => {
+                this.classList.remove('btn-success');
+                this.classList.add(fieldName === 'skillsOffered' ? 'btn-outline-success' : 'btn-outline-info');
+            }, 1000);
+        });
+    });
+});
+</script>
+
+<%- include('../partials/footer') %>

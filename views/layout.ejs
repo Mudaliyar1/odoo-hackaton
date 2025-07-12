@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><%= title %> - Skill Swap Platform</title>
+    <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="nav-brand">
+                <a href="/">
+                    <i class="fas fa-exchange-alt"></i>
+                    Skill Swap
+                </a>
+            </div>
+            
+            <div class="nav-menu">
+                <% if (user) { %>
+                    <a href="/users/dashboard" class="nav-link">
+                        <i class="fas fa-tachometer-alt"></i>
+                        Dashboard
+                    </a>
+                    <a href="/users/search" class="nav-link">
+                        <i class="fas fa-search"></i>
+                        Search
+                    </a>
+                    <a href="/swaps" class="nav-link">
+                        <i class="fas fa-handshake"></i>
+                        My Swaps
+                    </a>
+                    <% if (isAdmin) { %>
+                        <a href="/admin" class="nav-link admin-link">
+                            <i class="fas fa-cog"></i>
+                            Admin
+                        </a>
+                    <% } %>
+                    
+                    <div class="nav-dropdown">
+                        <button class="nav-dropdown-btn">
+                            <% if (user.profilePhoto) { %>
+                                <img src="/uploads/<%= user.profilePhoto %>" alt="Profile" class="nav-avatar">
+                            <% } else { %>
+                                <i class="fas fa-user-circle"></i>
+                            <% } %>
+                            <%= user.name %>
+                            <i class="fas fa-chevron-down"></i>
+                        </button>
+                        <div class="nav-dropdown-content">
+                            <a href="/users/profile">
+                                <i class="fas fa-user"></i>
+                                My Profile
+                            </a>
+                            <form action="/auth/logout" method="POST" class="logout-form">
+                                <button type="submit">
+                                    <i class="fas fa-sign-out-alt"></i>
+                                    Logout
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                <% } else { %>
+                    <a href="/auth/login" class="nav-link">
+                        <i class="fas fa-sign-in-alt"></i>
+                        Login
+                    </a>
+                    <a href="/auth/register" class="nav-link btn-primary">
+                        <i class="fas fa-user-plus"></i>
+                        Register
+                    </a>
+                <% } %>
+            </div>
+            
+            <div class="nav-toggle">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+        </div>
+    </nav>
+
+    <main class="main-content">
+        <%- body %>
+    </main>
+
+    <footer class="footer">
+        <div class="footer-container">
+            <div class="footer-section">
+                <h3>Skill Swap Platform</h3>
+                <p>Connect, learn, and grow together through skill sharing.</p>
+            </div>
+            <div class="footer-section">
+                <h4>Quick Links</h4>
+                <ul>
+                    <li><a href="/">Home</a></li>
+                    <li><a href="/users/search">Find Skills</a></li>
+                    <li><a href="/auth/register">Join Us</a></li>
+                </ul>
+            </div>
+            <div class="footer-section">
+                <h4>Support</h4>
+                <ul>
+                    <li><a href="/help">Help Center</a></li>
+                    <li><a href="/contact">Contact Us</a></li>
+                    <li><a href="/privacy">Privacy Policy</a></li>
+                </ul>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>&copy; 2025 Skill Swap Platform. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script src="/js/main.js"></script>
+</body>
+</html>
