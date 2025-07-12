@@ -1,16 +1,16 @@
     </main>
 
     <!-- Enhanced Footer -->
-    <footer class="footer-custom py-5 mt-auto">
+    <footer class="footer-custom py-5 mt-auto" style="background: linear-gradient(135deg, #f7f1e3 0%, #e8dcc6 25%, #d4c5a9 50%, #c0b283 75%, #a69769 100%);">
         <div class="container">
             <div class="row g-4">
                 <div class="col-lg-4 col-md-6">
                     <div class="footer-brand mb-3">
-                        <h5 class="text-primary fw-bold">
-                            <i class="fas fa-exchange-alt me-2"></i>
+                        <h5 class="fw-bold" style="color: #8b4513;">
+                            <i class="fas fa-exchange-alt me-2" style="color: #d4af37;"></i>
                             Skill Swap Platform
                         </h5>
-                        <p class="text-muted mb-3">Connect, learn, and grow together through skill sharing. Join our community of learners and teachers.</p>
+                        <p class="mb-3" style="color: #5a5a5a;">Connect, learn, and grow together through skill sharing. Join our community of learners and teachers.</p>
                         <div class="social-links">
                             <a href="#" class="text-muted me-3" title="Facebook">
                                 <i class="fab fa-facebook-f"></i>
@@ -28,7 +28,7 @@
                     </div>
                 </div>
                 <div class="col-lg-2 col-md-6">
-                    <h6 class="text-white fw-bold mb-3">Quick Links</h6>
+                    <h6 class="fw-bold mb-3" style="color: #8b4513;">Quick Links</h6>
                     <ul class="list-unstyled footer-links">
                         <li class="mb-2"><a href="/" class="text-muted text-decoration-none">Home</a></li>
                         <% if (user) { %>
@@ -42,7 +42,7 @@
                     </ul>
                 </div>
                 <div class="col-lg-3 col-md-6">
-                    <h6 class="text-white fw-bold mb-3">Support</h6>
+                    <h6 class="fw-bold mb-3" style="color: #8b4513;">Support</h6>
                     <ul class="list-unstyled footer-links">
                         <li class="mb-2"><a href="/help" class="text-muted text-decoration-none">Help Center</a></li>
                         <li class="mb-2"><a href="/contact" class="text-muted text-decoration-none">Contact Us</a></li>
@@ -51,7 +51,7 @@
                     </ul>
                 </div>
                 <div class="col-lg-3 col-md-6">
-                    <h6 class="text-white fw-bold mb-3">Contact Info</h6>
+                    <h6 class="fw-bold mb-3" style="color: #8b4513;">Contact Info</h6>
                     <ul class="list-unstyled footer-contact">
                         <li class="mb-2 text-muted">
                             <i class="fas fa-envelope me-2"></i>
@@ -84,25 +84,23 @@
 
     <style>
         .footer-custom {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-        }
-
-        .footer-custom h5,
-        .footer-custom h6 {
-            color: white !important;
+            color: #2c3e50;
         }
 
         .footer-custom .text-muted {
-            color: rgba(255, 255, 255, 0.8) !important;
+            color: #5a5a5a !important;
         }
 
         .footer-custom .border-secondary {
-            border-color: rgba(255, 255, 255, 0.2) !important;
+            border-color: rgba(139, 69, 19, 0.2) !important;
+        }
+
+        .footer-links a {
+            color: #5a5a5a !important;
         }
 
         .footer-links a:hover {
-            color: #ffd700 !important;
+            color: #8b4513 !important;
             transition: color 0.3s ease;
         }
 
@@ -113,20 +111,25 @@
             line-height: 40px;
             text-align: center;
             border-radius: 50%;
-            background: rgba(255, 255, 255, 0.1);
+            background: rgba(139, 69, 19, 0.1);
+            color: #8b4513 !important;
             transition: all 0.3s ease;
         }
 
         .social-links a:hover {
             color: white !important;
-            background: rgba(255, 215, 0, 0.8);
+            background: #8b4513;
             transform: translateY(-3px);
         }
 
         .footer-contact i {
             width: 16px;
             text-align: center;
-            color: #ffd700;
+            color: #d4af37;
+        }
+
+        .footer-contact {
+            color: #5a5a5a;
         }
 
         body {
@@ -137,10 +140,6 @@
 
         main {
             flex: 1;
-        }
-
-        .footer-brand .text-primary {
-            color: #ffd700 !important;
         }
     </style>
 

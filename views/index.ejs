@@ -1,82 +1,329 @@
 <%- include('partials/header') %>
 
 <!-- Hero Section -->
-<section class="bg-primary text-white py-5" style="background: linear-gradient(135deg, #0d6efd 0%, #6610f2 100%) !important;">
-    <div class="container py-5">
-        <div class="row justify-content-center text-center">
-            <div class="col-lg-8">
-                <h1 class="display-4 fw-bold mb-4">Share Skills, Learn Together</h1>
-                <p class="lead mb-5">
-                    Connect with people in your community to exchange skills and knowledge.
-                    Teach what you know, learn what you want.
-                </p>
-                <div class="d-flex flex-column flex-sm-row gap-3 justify-content-center">
-                    <% if (!user) { %>
-                        <a href="/auth/register" class="btn btn-light btn-lg px-4 py-3">
-                            <i class="fas fa-rocket me-2"></i>
-                            Get Started Free
-                        </a>
-                        <a href="/auth/login" class="btn btn-outline-light btn-lg px-4 py-3">
-                            <i class="fas fa-sign-in-alt me-2"></i>
-                            Sign In
-                        </a>
-                    <% } else { %>
-                        <a href="/users/search" class="btn btn-light btn-lg px-4 py-3">
-                            <i class="fas fa-search me-2"></i>
-                            Find Skills
-                        </a>
-                        <a href="/users/dashboard" class="btn btn-outline-light btn-lg px-4 py-3">
-                            <i class="fas fa-tachometer-alt me-2"></i>
-                            Dashboard
-                        </a>
-                    <% } %>
+<section class="hero-section" style="background: linear-gradient(135deg, #f7f1e3 0%, #e8dcc6 25%, #d4c5a9 50%, #c0b283 75%, #a69769 100%); min-height: 100vh; position: relative; overflow: hidden; margin-top: -1px; padding-top: 77px; border: none; outline: none; width: 100%; max-width: 100vw;">
+    <div class="container-fluid px-3 px-md-4">
+        <div class="row align-items-center justify-content-center" style="min-height: calc(100vh - 77px); margin: 0;">
+            <div class="col-12 col-sm-11 col-md-10 col-lg-8 col-xl-6">
+                <div class="hero-content text-center text-lg-start" style="color: #2c3e50; padding: 0 15px;">
+                    <h1 class="fw-bold mb-4" style="line-height: 1.2; font-size: clamp(2rem, 5vw, 3.5rem); color: #2c3e50;">
+                        Learn anything.<br>
+                        <span style="color: #8b4513;">Teach what you love.</span>
+                    </h1>
+                    <p class="lead mb-5" style="font-size: clamp(1rem, 2.5vw, 1.3rem); line-height: 1.6; color: #5a5a5a;">
+                        Connect with a vibrant community, share knowledge, and unlock your potential together.
+                    </p>
+
+                    <div class="d-flex flex-column flex-sm-row justify-content-center justify-content-lg-start gap-2 gap-sm-3 mb-5" style="width: 100%; max-width: 400px; margin: 0 auto;">
+                        <% if (!user) { %>
+                            <a href="/auth/register" class="btn btn-lg rounded-pill shadow-lg" style="font-weight: 600; font-size: clamp(0.9rem, 2vw, 1.1rem); background: #8b4513; border: none; color: white; padding: 12px 24px; flex: 1; min-width: 140px; max-width: 200px;">
+                                Get Started for Free
+                            </a>
+                            <a href="/auth/login" class="btn btn-lg rounded-pill" style="font-weight: 600; font-size: clamp(0.9rem, 2vw, 1.1rem); border: 2px solid #8b4513; color: #8b4513; background: transparent; padding: 12px 24px; flex: 1; min-width: 140px; max-width: 200px;">
+                                Sign In
+                            </a>
+                        <% } else { %>
+                            <a href="/users/dashboard" class="btn btn-lg rounded-pill shadow-lg" style="font-weight: 600; font-size: clamp(0.9rem, 2vw, 1.1rem); background: #8b4513; border: none; color: white !important; padding: 12px 24px; flex: 1; min-width: 140px; max-width: 200px;">
+                                Go to Dashboard
+                            </a>
+                            <a href="/users/search" class="btn btn-lg rounded-pill" style="font-weight: 600; font-size: clamp(0.9rem, 2vw, 1.1rem); border: 2px solid #8b4513; color: #8b4513; background: transparent; padding: 12px 24px; flex: 1; min-width: 140px; max-width: 200px;">
+                                Find Skills
+                            </a>
+                        <% } %>
+                    </div>
+
+                    <!-- Stats -->
+                    <div class="row text-center g-2 g-md-3" style="margin: 0; max-width: 100%;">
+                        <div class="col-4">
+                            <div class="stat-item" style="padding: 0.5rem;">
+                                <h2 class="fw-bold mb-1" style="color: #8b4513; font-size: clamp(1.2rem, 4vw, 2.5rem);">10k+</h2>
+                                <small style="color: #5a5a5a; font-weight: 500; font-size: clamp(0.7rem, 1.5vw, 0.9rem); line-height: 1.2;">Active Members</small>
+                            </div>
+                        </div>
+                        <div class="col-4">
+                            <div class="stat-item" style="padding: 0.5rem;">
+                                <h2 class="fw-bold mb-1" style="color: #8b4513; font-size: clamp(1.2rem, 4vw, 2.5rem);">5k+</h2>
+                                <small style="color: #5a5a5a; font-weight: 500; font-size: clamp(0.7rem, 1.5vw, 0.9rem); line-height: 1.2;">Skills Available</small>
+                            </div>
+                        </div>
+                        <div class="col-4">
+                            <div class="stat-item" style="padding: 0.5rem;">
+                                <h2 class="fw-bold mb-1" style="color: #8b4513; font-size: clamp(1.2rem, 4vw, 2.5rem);">15k+</h2>
+                                <small style="color: #5a5a5a; font-weight: 500; font-size: clamp(0.7rem, 1.5vw, 0.9rem); line-height: 1.2;">Successful Swaps</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-6">
+                <div class="hero-illustrations position-relative" style="height: 400px;">
+                    <!-- Character Illustrations -->
+                    <div class="character-card floating-1" style="position: absolute; top: 20px; right: 50px;">
+                        <div class="character-avatar" style="width: 100px; height: 100px; background: linear-gradient(135deg, #d4af37 0%, #ffd700 100%); border-radius: 20px; display: flex; align-items: center; justify-content: center; box-shadow: 0 15px 35px rgba(139, 69, 19, 0.2); transform: rotate(-5deg);">
+                            <i class="fas fa-user-graduate" style="font-size: 2.5rem; color: white;"></i>
+                        </div>
+                    </div>
+
+                    <div class="character-card floating-2" style="position: absolute; top: 20px; right: 200px;">
+                        <div class="character-avatar" style="width: 100px; height: 100px; background: linear-gradient(135deg, #8b7355 0%, #a0522d 100%); border-radius: 20px; display: flex; align-items: center; justify-content: center; box-shadow: 0 15px 35px rgba(139, 69, 19, 0.2); transform: rotate(5deg);">
+                            <i class="fas fa-user-tie" style="font-size: 2.5rem; color: white;"></i>
+                        </div>
+                    </div>
+
+                    <div class="character-card floating-3" style="position: absolute; top: 180px; right: 50px;">
+                        <div class="character-avatar" style="width: 100px; height: 100px; background: linear-gradient(135deg, #daa520 0%, #b8860b 100%); border-radius: 20px; display: flex; align-items: center; justify-content: center; box-shadow: 0 15px 35px rgba(139, 69, 19, 0.2); transform: rotate(8deg);">
+                            <i class="fas fa-user-friends" style="font-size: 2.5rem; color: white;"></i>
+                        </div>
+                    </div>
+
+                    <div class="character-card floating-4" style="position: absolute; top: 180px; right: 200px;">
+                        <div class="character-avatar" style="width: 100px; height: 100px; background: linear-gradient(135deg, #cd853f 0%, #d2691e 100%); border-radius: 20px; display: flex; align-items: center; justify-content: center; box-shadow: 0 15px 35px rgba(139, 69, 19, 0.2); transform: rotate(-8deg);">
+                            <i class="fas fa-user-cog" style="font-size: 2.5rem; color: white;"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Floating Animation CSS -->
+    <style>
+        @keyframes float {
+            0%, 100% { transform: translateY(0px) rotate(-5deg); }
+            50% { transform: translateY(-20px) rotate(-5deg); }
+        }
+        @keyframes float2 {
+            0%, 100% { transform: translateY(0px) rotate(5deg); }
+            50% { transform: translateY(-15px) rotate(5deg); }
+        }
+        @keyframes float3 {
+            0%, 100% { transform: translateY(0px) rotate(8deg); }
+            50% { transform: translateY(-25px) rotate(8deg); }
+        }
+        @keyframes float4 {
+            0%, 100% { transform: translateY(0px) rotate(-8deg); }
+            50% { transform: translateY(-18px) rotate(-8deg); }
+        }
+
+        .floating-1 { animation: float 3s ease-in-out infinite; }
+        .floating-2 { animation: float2 3s ease-in-out infinite 0.5s; }
+        .floating-3 { animation: float3 3s ease-in-out infinite 1s; }
+        .floating-4 { animation: float4 3s ease-in-out infinite 1.5s; }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            transition: all 0.3s ease;
+        }
+
+        .stat-item:hover {
+            transform: scale(1.05);
+            transition: all 0.3s ease;
+        }
+
+        .skill-category-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 20px 40px rgba(139, 69, 19, 0.2) !important;
+        }
+
+        .skill-category-card:hover .skill-icon {
+            transform: scale(1.1);
+        }
+
+        .step-icon:hover {
+            transform: scale(1.1);
+            transition: all 0.3s ease;
+        }
+
+        /* Natural, organic feel */
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #fafafa;
+        }
+
+        .hero-section {
+            position: relative;
+        }
+
+        .hero-section::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="grain" width="100" height="100" patternUnits="userSpaceOnUse"><circle cx="25" cy="25" r="1" fill="%23000000" opacity="0.02"/><circle cx="75" cy="75" r="1" fill="%23000000" opacity="0.02"/><circle cx="50" cy="10" r="0.5" fill="%23000000" opacity="0.01"/><circle cx="10" cy="60" r="0.5" fill="%23000000" opacity="0.01"/><circle cx="90" cy="40" r="0.5" fill="%23000000" opacity="0.01"/></pattern></defs><rect width="100" height="100" fill="url(%23grain)"/></svg>');
+            pointer-events: none;
+        }
+
+        /* Add subtle shadows and depth */
+        .character-avatar {
+            position: relative;
+        }
+
+        .character-avatar::after {
+            content: '';
+            position: absolute;
+            top: 5px;
+            left: 5px;
+            right: -5px;
+            bottom: -5px;
+            background: rgba(139, 69, 19, 0.1);
+            border-radius: inherit;
+            z-index: -1;
+        }
+
+        /* Organic button styling */
+        .btn {
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+            transition: left 0.5s;
+        }
+
+        .btn:hover::before {
+            left: 100%;
+        }
+
+        /* Natural spacing and rhythm */
+        section {
+            position: relative;
+        }
+
+        /* Subtle texture overlay */
+        .skill-category-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="texture" width="20" height="20" patternUnits="userSpaceOnUse"><circle cx="10" cy="10" r="0.5" fill="%23000000" opacity="0.02"/></pattern></defs><rect width="100" height="100" fill="url(%23texture)"/></svg>');
+            border-radius: inherit;
+            pointer-events: none;
+        }
+    </style>
+</section>
+
+<!-- Popular Skill Categories Section -->
+<section class="py-4 py-md-5" style="background: linear-gradient(135deg, #f5f5dc 0%, #e6e6fa 50%, #f0f8ff 100%); overflow-x: hidden;">
+    <div class="container-fluid px-3 px-md-4">
+        <div class="text-center mb-4 mb-md-5">
+            <h2 class="fw-bold mb-3" style="color: #2c3e50; font-size: clamp(1.5rem, 4vw, 2.5rem);">Popular Skill Categories</h2>
+            <p class="lead" style="color: #5a5a5a; font-size: clamp(0.9rem, 2vw, 1.25rem); padding: 0 15px;">Discover the most sought-after skills in our community. Whether you want to learn or teach, there's something for everyone.</p>
+        </div>
+
+        <div class="row g-4 justify-content-center">
+            <div class="col-lg-2 col-md-4 col-sm-6 col-6">
+                <div class="skill-category-card text-center p-3 p-md-4" style="background: white; border-radius: 20px; box-shadow: 0 10px 30px rgba(139, 69, 19, 0.1); transition: all 0.3s ease; cursor: pointer;">
+                    <div class="skill-icon mb-3" style="width: clamp(50px, 8vw, 60px); height: clamp(50px, 8vw, 60px); background: linear-gradient(135deg, #8b4513 0%, #a0522d 100%); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto;">
+                        <i class="fas fa-code" style="color: white; font-size: clamp(1rem, 2vw, 1.5rem);"></i>
+                    </div>
+                    <h6 class="fw-bold mb-0" style="color: #2c3e50; font-size: clamp(0.8rem, 1.5vw, 1rem);">Programming</h6>
+                </div>
+            </div>
+
+            <div class="col-lg-2 col-md-4 col-sm-6 col-6">
+                <div class="skill-category-card text-center p-3 p-md-4" style="background: white; border-radius: 20px; box-shadow: 0 10px 30px rgba(139, 69, 19, 0.1); transition: all 0.3s ease; cursor: pointer;">
+                    <div class="skill-icon mb-3" style="width: clamp(50px, 8vw, 60px); height: clamp(50px, 8vw, 60px); background: linear-gradient(135deg, #daa520 0%, #b8860b 100%); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto;">
+                        <i class="fas fa-camera" style="color: white; font-size: clamp(1rem, 2vw, 1.5rem);"></i>
+                    </div>
+                    <h6 class="fw-bold mb-0" style="color: #2c3e50; font-size: clamp(0.8rem, 1.5vw, 1rem);">Photography</h6>
+                </div>
+            </div>
+
+            <div class="col-lg-2 col-md-4 col-sm-6 col-6">
+                <div class="skill-category-card text-center p-3 p-md-4" style="background: white; border-radius: 20px; box-shadow: 0 10px 30px rgba(139, 69, 19, 0.1); transition: all 0.3s ease; cursor: pointer;">
+                    <div class="skill-icon mb-3" style="width: clamp(50px, 8vw, 60px); height: clamp(50px, 8vw, 60px); background: linear-gradient(135deg, #cd853f 0%, #d2691e 100%); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto;">
+                        <i class="fas fa-language" style="color: white; font-size: clamp(1rem, 2vw, 1.5rem);"></i>
+                    </div>
+                    <h6 class="fw-bold mb-0" style="color: #2c3e50; font-size: clamp(0.8rem, 1.5vw, 1rem);">Languages</h6>
+                </div>
+            </div>
+
+            <div class="col-lg-2 col-md-4 col-sm-6">
+                <div class="skill-category-card text-center p-4" style="background: white; border-radius: 20px; box-shadow: 0 10px 30px rgba(139, 69, 19, 0.1); transition: all 0.3s ease; cursor: pointer;">
+                    <div class="skill-icon mb-3" style="width: 60px; height: 60px; background: linear-gradient(135deg, #d4af37 0%, #ffd700 100%); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto;">
+                        <i class="fas fa-paint-brush" style="color: white; font-size: 1.5rem;"></i>
+                    </div>
+                    <h6 class="fw-bold mb-0" style="color: #2c3e50;">Design</h6>
+                </div>
+            </div>
+
+            <div class="col-lg-2 col-md-4 col-sm-6">
+                <div class="skill-category-card text-center p-4" style="background: white; border-radius: 20px; box-shadow: 0 10px 30px rgba(139, 69, 19, 0.1); transition: all 0.3s ease; cursor: pointer;">
+                    <div class="skill-icon mb-3" style="width: 60px; height: 60px; background: linear-gradient(135deg, #8b7355 0%, #a0522d 100%); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto;">
+                        <i class="fas fa-music" style="color: white; font-size: 1.5rem;"></i>
+                    </div>
+                    <h6 class="fw-bold mb-0" style="color: #2c3e50;">Music</h6>
+                </div>
+            </div>
+
+            <div class="col-lg-2 col-md-4 col-sm-6">
+                <div class="skill-category-card text-center p-4" style="background: white; border-radius: 20px; box-shadow: 0 10px 30px rgba(139, 69, 19, 0.1); transition: all 0.3s ease; cursor: pointer;">
+                    <div class="skill-icon mb-3" style="width: 60px; height: 60px; background: linear-gradient(135deg, #8b4513 0%, #a0522d 100%); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto;">
+                        <i class="fas fa-briefcase" style="color: white; font-size: 1.5rem;"></i>
+                    </div>
+                    <h6 class="fw-bold mb-0" style="color: #2c3e50;">Business</h6>
                 </div>
             </div>
         </div>
     </div>
 </section>
 
-<!-- Features Section -->
-<section class="py-5 bg-light">
+<!-- How Skill Swap Works Section -->
+<section class="py-5" style="background: white;">
     <div class="container">
-        <div class="row justify-content-center mb-5">
-            <div class="col-lg-8 text-center">
-                <h2 class="display-5 fw-bold mb-3">How It Works</h2>
-                <p class="lead text-muted">Get started with skill swapping in three simple steps</p>
-            </div>
+        <div class="text-center mb-5">
+            <h2 class="display-5 fw-bold mb-3" style="color: #2c3e50;">How Skill Swap Works</h2>
         </div>
-        <div class="row g-4">
-            <div class="col-md-4">
-                <div class="card h-100 border-0 shadow-sm">
-                    <div class="card-body text-center p-4">
-                        <div class="bg-primary text-white rounded-circle d-inline-flex align-items-center justify-content-center mb-4" style="width: 80px; height: 80px;">
-                            <i class="fas fa-user-plus fs-2"></i>
-                        </div>
-                        <h4 class="fw-bold mb-3">Create Your Profile</h4>
-                        <p class="text-muted">List the skills you can teach and what you'd like to learn. Add your availability and preferences.</p>
+
+        <div class="row g-5 align-items-center">
+            <div class="col-lg-3 col-md-6">
+                <div class="text-center">
+                    <div class="step-icon mb-4" style="width: 100px; height: 100px; background: linear-gradient(135deg, #8b4513 0%, #a0522d 100%); border-radius: 20px; display: flex; align-items: center; justify-content: center; margin: 0 auto; box-shadow: 0 15px 35px rgba(139, 69, 19, 0.3);">
+                        <i class="fas fa-user-plus" style="color: white; font-size: 2.5rem;"></i>
                     </div>
+                    <h4 class="fw-bold mb-3" style="color: #2c3e50;">Create Your Profile</h4>
+                    <p style="color: #5a5a5a;">Share what you can teach and what you want to learn. Add your availability and preferences.</p>
                 </div>
             </div>
-            <div class="col-md-4">
-                <div class="card h-100 border-0 shadow-sm">
-                    <div class="card-body text-center p-4">
-                        <div class="bg-success text-white rounded-circle d-inline-flex align-items-center justify-content-center mb-4" style="width: 80px; height: 80px;">
-                            <i class="fas fa-search fs-2"></i>
-                        </div>
-                        <h4 class="fw-bold mb-3">Find Skill Partners</h4>
-                        <p class="text-muted">Search for people who have the skills you want to learn and can benefit from what you offer.</p>
+
+            <div class="col-lg-3 col-md-6">
+                <div class="text-center">
+                    <div class="step-icon mb-4" style="width: 100px; height: 100px; background: linear-gradient(135deg, #daa520 0%, #b8860b 100%); border-radius: 20px; display: flex; align-items: center; justify-content: center; margin: 0 auto; box-shadow: 0 15px 35px rgba(218, 165, 32, 0.3);">
+                        <i class="fas fa-search" style="color: white; font-size: 2.5rem;"></i>
                     </div>
+                    <h4 class="fw-bold mb-3" style="color: #2c3e50;">Find a Match</h4>
+                    <p style="color: #5a5a5a;">Connect with members who have complementary skills. Browse profiles and find your perfect learning partner.</p>
                 </div>
             </div>
-            <div class="col-md-4">
-                <div class="card h-100 border-0 shadow-sm">
-                    <div class="card-body text-center p-4">
-                        <div class="bg-warning text-white rounded-circle d-inline-flex align-items-center justify-content-center mb-4" style="width: 80px; height: 80px;">
-                            <i class="fas fa-handshake fs-2"></i>
-                        </div>
-                        <h4 class="fw-bold mb-3">Start Swapping</h4>
-                        <p class="text-muted">Send requests, arrange meetings, and start learning from each other. Rate and review your experiences.</p>
+
+            <div class="col-lg-3 col-md-6">
+                <div class="text-center">
+                    <div class="step-icon mb-4" style="width: 100px; height: 100px; background: linear-gradient(135deg, #cd853f 0%, #d2691e 100%); border-radius: 20px; display: flex; align-items: center; justify-content: center; margin: 0 auto; box-shadow: 0 15px 35px rgba(205, 133, 63, 0.3);">
+                        <i class="fas fa-calendar-alt" style="color: white; font-size: 2.5rem;"></i>
                     </div>
+                    <h4 class="fw-bold mb-3" style="color: #2c3e50;">Arrange Sessions</h4>
+                    <p style="color: #5a5a5a;">Schedule your skill exchange sessions. Set up meetings that work for both participants.</p>
+                </div>
+            </div>
+
+            <div class="col-lg-3 col-md-6">
+                <div class="text-center">
+                    <div class="step-icon mb-4" style="width: 100px; height: 100px; background: linear-gradient(135deg, #d4af37 0%, #ffd700 100%); border-radius: 20px; display: flex; align-items: center; justify-content: center; margin: 0 auto; box-shadow: 0 15px 35px rgba(212, 175, 55, 0.3);">
+                        <i class="fas fa-graduation-cap" style="color: white; font-size: 2.5rem;"></i>
+                    </div>
+                    <h4 class="fw-bold mb-3" style="color: #2c3e50;">Start Learning</h4>
+                    <p style="color: #5a5a5a;">Exchange skills and grow together. Share knowledge and build lasting learning relationships.</p>
                 </div>
             </div>
         </div>
@@ -153,19 +400,19 @@
 <% } %>
 
 <!-- CTA Section -->
-<section class="bg-primary text-white py-5" style="background: linear-gradient(135deg, #6610f2 0%, #0d6efd 100%) !important;">
+<section class="py-5" style="background: linear-gradient(135deg, #8b4513 0%, #a0522d 50%, #d4af37 100%);">
     <div class="container py-5">
         <div class="row justify-content-center text-center">
             <div class="col-lg-8">
-                <h2 class="display-5 fw-bold mb-4">Ready to Start Learning?</h2>
-                <p class="lead mb-5">Join our community of skill sharers and discover new opportunities to grow.</p>
+                <h2 class="display-5 fw-bold mb-4" style="color: white;">Ready to Start Learning?</h2>
+                <p class="lead mb-5" style="color: rgba(255, 255, 255, 0.9);">Join our community of skill sharers and discover new opportunities to grow.</p>
                 <% if (!user) { %>
-                    <a href="/auth/register" class="btn btn-light btn-lg px-5 py-3">
+                    <a href="/auth/register" class="btn btn-lg px-5 py-3 rounded-pill shadow-lg" style="background: white; color: #8b4513; font-weight: 600; border: none;">
                         <i class="fas fa-rocket me-2"></i>
                         Join Now - It's Free
                     </a>
                 <% } else { %>
-                    <a href="/users/search" class="btn btn-light btn-lg px-5 py-3">
+                    <a href="/users/search" class="btn btn-lg px-5 py-3 rounded-pill shadow-lg" style="background: white; color: #8b4513; font-weight: 600; border: none;">
                         <i class="fas fa-search me-2"></i>
                         Start Exploring
                     </a>

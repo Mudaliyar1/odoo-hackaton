@@ -4,10 +4,10 @@
     <!-- Search Header -->
     <div class="row mb-4">
         <div class="col-12">
-            <div class="card bg-primary text-white border-0" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;">
+            <div class="card bg-primary text-white border-0" style="background: linear-gradient(135deg, #f7f1e3 0%, #e8dcc6 25%, #d4c5a9 50%, #c0b283 75%, #a69769 100%) !important; color: #2c3e50 !important;">
                 <div class="card-body text-center py-5">
-                    <h1 class="display-5 fw-bold mb-3">Find Your Perfect Skill Partner</h1>
-                    <p class="lead mb-0">Discover people who can teach you new skills or learn from what you offer</p>
+                    <h1 class="display-5 fw-bold mb-3" style="color: #2c3e50;">Find Your Perfect Skill Partner</h1>
+                    <p class="lead mb-0" style="color: #2c3e50;">Discover people who can teach you new skills or learn from what you offer</p>
                 </div>
             </div>
         </div>
@@ -18,36 +18,38 @@
         <div class="col-12">
             <div class="card shadow-sm border-0">
                 <div class="card-body">
-                    <form method="GET" action="/users/search" class="row g-3">
-                        <div class="col-md-4">
-                            <label for="q" class="form-label">Search</label>
-                            <input type="text" class="form-control" id="q" name="q" value="<%= query.q || '' %>" placeholder="Search by name, skills, or location">
-                        </div>
-                        <div class="col-md-3">
-                            <label for="skill" class="form-label">Specific Skill</label>
-                            <input type="text" class="form-control" id="skill" name="skill" value="<%= query.skill || '' %>" placeholder="e.g., JavaScript, Guitar">
-                        </div>
-                        <div class="col-md-3">
-                            <label class="form-label">Availability</label>
-                            <div class="d-flex gap-2">
-                                <div class="form-check">
-                                    <input class="form-check-input" type="checkbox" id="weekdays" name="availability" value="weekdays" <%= query.availability && query.availability.includes('weekdays') ? 'checked' : '' %>>
-                                    <label class="form-check-label small" for="weekdays">Weekdays</label>
-                                </div>
-                                <div class="form-check">
-                                    <input class="form-check-input" type="checkbox" id="weekends" name="availability" value="weekends" <%= query.availability && query.availability.includes('weekends') ? 'checked' : '' %>>
-                                    <label class="form-check-label small" for="weekends">Weekends</label>
-                                </div>
-                                <div class="form-check">
-                                    <input class="form-check-input" type="checkbox" id="evenings" name="availability" value="evenings" <%= query.availability && query.availability.includes('evenings') ? 'checked' : '' %>>
-                                    <label class="form-check-label small" for="evenings">Evenings</label>
+                    <form method="GET" action="/users/search" class="search-form">
+                        <div class="row g-3">
+                            <div class="col-lg-4 col-md-6">
+                                <label for="q" class="form-label fw-medium">Search</label>
+                                <input type="text" class="form-control" id="q" name="q" value="<%= query.q || '' %>" placeholder="Search by name, skills, or location">
+                            </div>
+                            <div class="col-lg-3 col-md-6">
+                                <label for="skill" class="form-label fw-medium">Specific Skill</label>
+                                <input type="text" class="form-control" id="skill" name="skill" value="<%= query.skill || '' %>" placeholder="e.g., JavaScript, Guitar">
+                            </div>
+                            <div class="col-lg-3 col-md-8">
+                                <label class="form-label fw-medium">Availability</label>
+                                <div class="d-flex flex-wrap gap-2">
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" id="weekdays" name="availability" value="weekdays" <%= query.availability && query.availability.includes('weekdays') ? 'checked' : '' %>>
+                                        <label class="form-check-label small" for="weekdays">Weekdays</label>
+                                    </div>
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" id="weekends" name="availability" value="weekends" <%= query.availability && query.availability.includes('weekends') ? 'checked' : '' %>>
+                                        <label class="form-check-label small" for="weekends">Weekends</label>
+                                    </div>
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" id="evenings" name="availability" value="evenings" <%= query.availability && query.availability.includes('evenings') ? 'checked' : '' %>>
+                                        <label class="form-check-label small" for="evenings">Evenings</label>
+                                    </div>
                                 </div>
                             </div>
-                        </div>
-                        <div class="col-md-2 d-flex align-items-end">
-                            <button type="submit" class="btn btn-primary w-100">
-                                <i class="fas fa-search me-1"></i>Search
-                            </button>
+                            <div class="col-lg-2 col-md-4 d-flex align-items-end">
+                                <button type="submit" class="btn btn-primary w-100" style="background: #8b4513; border-color: #8b4513;">
+                                    <i class="fas fa-search me-1"></i>Search
+                                </button>
+                            </div>
                         </div>
                     </form>
                 </div>
@@ -58,12 +60,16 @@
     <!-- Search Results -->
     <div class="row">
         <div class="col-12">
-            <div class="d-flex justify-content-between align-items-center mb-3">
-                <h3 class="mb-0">
-                    <i class="fas fa-users me-2 text-primary"></i>
-                    Search Results
-                    <span class="badge bg-primary ms-2"><%= users.length %> found</span>
-                </h3>
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <div class="d-flex align-items-center">
+                    <h3 class="mb-0 me-3" style="color: #8b4513;">
+                        <i class="fas fa-users me-2"></i>
+                        Search Results
+                    </h3>
+                    <span class="badge rounded-pill px-3 py-2" style="background-color: #8b4513; font-size: 0.9rem;">
+                        <%= users.length %> <%= users.length === 1 ? 'person' : 'people' %> found
+                    </span>
+                </div>
                 <% if (query.q || query.skill || query.availability) { %>
                     <a href="/users/search" class="btn btn-outline-secondary btn-sm">
                         <i class="fas fa-times me-1"></i>Clear Filters
@@ -146,13 +152,13 @@
                                             <h6 class="small fw-bold text-primary mb-2">Available:</h6>
                                             <div class="d-flex justify-content-center gap-1">
                                                 <% if (user.availability.weekdays) { %>
-                                                    <span class="badge bg-primary-subtle text-primary">Weekdays</span>
+                                                    <span class="badge bg-primary-subtle text-white">Weekdays</span>
                                                 <% } %>
                                                 <% if (user.availability.weekends) { %>
-                                                    <span class="badge bg-primary-subtle text-primary">Weekends</span>
+                                                    <span class="badge bg-primary-subtle text-white">Weekends</span>
                                                 <% } %>
                                                 <% if (user.availability.evenings) { %>
-                                                    <span class="badge bg-primary-subtle text-primary">Evenings</span>
+                                                    <span class="badge bg-primary-subtle text-white">Evenings</span>
                                                 <% } %>
                                             </div>
                                         </div>

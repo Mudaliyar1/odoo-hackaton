@@ -545,6 +545,21 @@ router.get('/feedback', async (req, res) => {
   }
 });
 
+// DELETE /admin/feedback/:id - Delete feedback
+router.delete('/feedback/:id', async (req, res) => {
+  try {
+    const feedback = await Feedback.findByIdAndDelete(req.params.id);
+    if (!feedback) {
+      return res.status(404).json({ error: 'Feedback not found' });
+    }
+
+    res.json({ success: true, message: 'Feedback deleted successfully' });
+  } catch (error) {
+    console.error('Delete feedback error:', error);
+    res.status(500).json({ error: 'Failed to delete feedback' });
+  }
+});
+
 // GET /admin/announcements - Manage announcements
 router.get('/announcements', async (req, res) => {
   try {

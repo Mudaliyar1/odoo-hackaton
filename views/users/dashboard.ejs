@@ -4,29 +4,29 @@
     <!-- Welcome Section -->
     <div class="row mb-4">
         <div class="col-12">
-            <div class="card bg-primary text-white" style="background: linear-gradient(135deg, #0d6efd 0%, #6610f2 100%) !important;">
+            <div class="card text-white border-0 shadow-lg" style="background: linear-gradient(135deg, #8b4513 0%, #a0522d 100%);">
                 <div class="card-body p-4">
                     <div class="row align-items-center">
                         <div class="col-md-8">
                             <h1 class="h3 fw-bold mb-2">Welcome back, <%= user.name %>!</h1>
-                            <p class="mb-0 opacity-75">Ready to continue your skill-sharing journey?</p>
+                            <p class="mb-0 opacity-90">Ready to continue your skill-sharing journey?</p>
                         </div>
                         <div class="col-md-4 text-md-end mt-3 mt-md-0">
                             <% if (user.skillsOffered && user.skillsOffered.length > 0) { %>
-                                <a href="/users/search" class="btn btn-light me-2 mb-2">
+                                <a href="/users/search" class="btn me-2 mb-2" style="background: white; color: #8b4513; border: 2px solid #8b4513; font-weight: 600;">
                                     <i class="fas fa-search me-1"></i>
                                     Find Skills
                                 </a>
-                                <a href="/users/profile" class="btn btn-outline-light mb-2">
+                                <a href="/users/profile" class="btn btn-outline-light mb-2" style="border-color: white; color: white;">
                                     <i class="fas fa-user me-1"></i>
                                     Edit Profile
                                 </a>
                             <% } else { %>
-                                <a href="/users/skills" class="btn btn-warning me-2 mb-2">
+                                <a href="/users/skills" class="btn btn-warning me-2 mb-2" style="font-weight: 600;">
                                     <i class="fas fa-plus me-1"></i>
                                     Add Your Skills
                                 </a>
-                                <a href="/users/profile" class="btn btn-outline-light mb-2">
+                                <a href="/users/profile" class="btn btn-outline-light mb-2" style="border-color: white; color: white;">
                                     <i class="fas fa-user me-1"></i>
                                     Complete Profile
                                 </a>
@@ -113,13 +113,20 @@
     <div class="row mb-4">
         <div class="col-12">
             <div class="card shadow-sm border-0">
-                <div class="card-header bg-success text-white">
+                <div class="card-header text-white" style="background: linear-gradient(135deg, #8b4513 0%, #a0522d 100%);">
                     <h4 class="mb-0">
                         <i class="fas fa-graduation-cap me-2"></i>
-                        My Skills
+                        Complete Your Profile!
                     </h4>
                 </div>
-                <div class="card-body">
+                <div class="card-body" style="background: linear-gradient(135deg, #f5f5dc 0%, #f0f0e6 100%);">
+                    <% if (!user.skillsOffered || user.skillsOffered.length === 0 || !user.skillsWanted || user.skillsWanted.length === 0) { %>
+                        <div class="text-center mb-4">
+                            <i class="fas fa-lightbulb text-warning" style="font-size: 3rem; margin-bottom: 1rem;"></i>
+                            <p class="lead text-muted">Add your skills to start connecting with other learners and teachers in the community.</p>
+                        </div>
+                    <% } %>
+
                     <div class="row">
                         <!-- Skills I Can Teach -->
                         <div class="col-md-6 mb-3">
@@ -180,17 +187,8 @@
 
                     <!-- Action Buttons -->
                     <div class="text-center">
-                        <% if (!user.skillsOffered || user.skillsOffered.length === 0 || !user.skillsWanted || user.skillsWanted.length === 0) { %>
-                            <div class="alert alert-primary mb-3">
-                                <h6 class="alert-heading">
-                                    <i class="fas fa-lightbulb me-2"></i>
-                                    Complete Your Profile!
-                                </h6>
-                                <p class="mb-2">Add your skills to start connecting with other learners and teachers in the community.</p>
-                            </div>
-                        <% } %>
                         <div class="d-flex gap-2 justify-content-center flex-wrap">
-                            <a href="/users/skills" class="btn btn-primary">
+                            <a href="/users/skills" class="btn" style="background: white; color: #8b4513; border: 2px solid #8b4513; font-weight: 600;">
                                 <i class="fas fa-plus me-2"></i>
                                 <% if (!user.skillsOffered || user.skillsOffered.length === 0) { %>
                                     Add Your Skills
@@ -216,58 +214,58 @@
     </div>
 
     <!-- Recent Activity -->
-    <div class="row">
+    <div class="row g-4">
         <!-- Incoming Requests -->
-        <div class="col-6">
-            <div class="card">
-                <div class="card-header">
-                    <h3>
-                        <i class="fas fa-inbox"></i>
-                        Incoming Requests
-                    </h3>
+        <div class="col-md-6">
+            <div class="card shadow-sm border-0 h-100">
+                <div class="card-header text-white d-flex align-items-center" style="background: linear-gradient(135deg, #8b4513 0%, #a0522d 100%);">
+                    <i class="fas fa-inbox me-2"></i>
+                    <h5 class="mb-0">Incoming Requests</h5>
                 </div>
-                <div class="card-body">
+                <div class="card-body" style="background: linear-gradient(135deg, #f5f5dc 0%, #f0f0e6 100%);">
                     <% if (incomingRequests && incomingRequests.length > 0) { %>
                         <div class="request-list">
                             <% incomingRequests.forEach(function(request) { %>
-                                <div class="request-item">
-                                    <div class="request-user">
+                                <div class="request-item p-3 mb-3 border rounded" style="background: white; border-color: #ddd !important;">
+                                    <div class="d-flex align-items-center mb-2">
                                         <% if (request.requester.profilePhoto) { %>
-                                            <img src="/uploads/<%= request.requester.profilePhoto %>" alt="<%= request.requester.name %>" class="profile-photo profile-photo-sm">
+                                            <img src="/uploads/<%= request.requester.profilePhoto %>" alt="<%= request.requester.name %>" class="rounded-circle me-3" style="width: 40px; height: 40px; object-fit: cover;">
                                         <% } else { %>
-                                            <div class="avatar-placeholder-sm">
-                                                <i class="fas fa-user"></i>
+                                            <div class="rounded-circle bg-secondary d-flex align-items-center justify-content-center me-3" style="width: 40px; height: 40px;">
+                                                <i class="fas fa-user text-white"></i>
                                             </div>
                                         <% } %>
-                                        <div class="request-info">
-                                            <h4><%= request.requester.name %></h4>
-                                            <p class="request-skills">
-                                                Offers: <%= request.skillsOffered.join(', ') %>
-                                            </p>
-                                            <p class="request-date">
-                                                <i class="fas fa-calendar"></i>
+                                        <div class="flex-grow-1">
+                                            <h6 class="mb-1 fw-bold"><%= request.requester.name %></h6>
+                                            <small class="text-muted">
+                                                <i class="fas fa-calendar me-1"></i>
                                                 <%= new Date(request.createdAt).toLocaleDateString() %>
-                                            </p>
+                                            </small>
                                         </div>
                                     </div>
-                                    <div class="request-actions">
-                                        <a href="/swaps/<%= request._id %>" class="btn btn-sm btn-primary">
+                                    <p class="mb-2 small text-muted">
+                                        <strong>Offers:</strong> <%= request.skillsOffered.join(', ') %>
+                                    </p>
+                                    <div class="text-end">
+                                        <a href="/swaps/<%= request._id %>" class="btn btn-sm" style="background: #8b4513; color: white; border: none;">
                                             View Details
                                         </a>
                                     </div>
                                 </div>
                             <% }); %>
                         </div>
-                        <div class="card-footer">
-                            <a href="/swaps?type=incoming&status=pending" class="btn btn-outline">
-                                View All Incoming
-                            </a>
-                        </div>
+                        <% if (incomingRequests.length > 3) { %>
+                            <div class="text-center mt-3">
+                                <a href="/swaps?type=incoming&status=pending" class="btn btn-outline-secondary btn-sm">
+                                    View All Incoming
+                                </a>
+                            </div>
+                        <% } %>
                     <% } else { %>
-                        <div class="empty-state">
-                            <i class="fas fa-inbox"></i>
-                            <h4>No incoming requests</h4>
-                            <p>When someone wants to swap skills with you, their requests will appear here.</p>
+                        <div class="text-center py-5">
+                            <i class="fas fa-inbox text-muted" style="font-size: 3rem; margin-bottom: 1rem;"></i>
+                            <h6 class="text-muted">No incoming requests</h6>
+                            <p class="text-muted small">When someone wants to swap skills with you, their requests will appear here.</p>
                         </div>
                     <% } %>
                 </div>
@@ -275,58 +273,58 @@
         </div>
 
         <!-- Outgoing Requests -->
-        <div class="col-6">
-            <div class="card">
-                <div class="card-header">
-                    <h3>
-                        <i class="fas fa-paper-plane"></i>
-                        Outgoing Requests
-                    </h3>
+        <div class="col-md-6">
+            <div class="card shadow-sm border-0 h-100">
+                <div class="card-header text-white d-flex align-items-center" style="background: linear-gradient(135deg, #8b4513 0%, #a0522d 100%);">
+                    <i class="fas fa-paper-plane me-2"></i>
+                    <h5 class="mb-0">Outgoing Requests</h5>
                 </div>
-                <div class="card-body">
+                <div class="card-body" style="background: linear-gradient(135deg, #f5f5dc 0%, #f0f0e6 100%);">
                     <% if (outgoingRequests && outgoingRequests.length > 0) { %>
                         <div class="request-list">
                             <% outgoingRequests.forEach(function(request) { %>
-                                <div class="request-item">
-                                    <div class="request-user">
+                                <div class="request-item p-3 mb-3 border rounded" style="background: white; border-color: #ddd !important;">
+                                    <div class="d-flex align-items-center mb-2">
                                         <% if (request.recipient.profilePhoto) { %>
-                                            <img src="/uploads/<%= request.recipient.profilePhoto %>" alt="<%= request.recipient.name %>" class="profile-photo profile-photo-sm">
+                                            <img src="/uploads/<%= request.recipient.profilePhoto %>" alt="<%= request.recipient.name %>" class="rounded-circle me-3" style="width: 40px; height: 40px; object-fit: cover;">
                                         <% } else { %>
-                                            <div class="avatar-placeholder-sm">
-                                                <i class="fas fa-user"></i>
+                                            <div class="rounded-circle bg-secondary d-flex align-items-center justify-content-center me-3" style="width: 40px; height: 40px;">
+                                                <i class="fas fa-user text-white"></i>
                                             </div>
                                         <% } %>
-                                        <div class="request-info">
-                                            <h4><%= request.recipient.name %></h4>
-                                            <p class="request-skills">
-                                                Wants: <%= request.skillsWanted.join(', ') %>
-                                            </p>
-                                            <p class="request-date">
-                                                <i class="fas fa-calendar"></i>
+                                        <div class="flex-grow-1">
+                                            <h6 class="mb-1 fw-bold"><%= request.recipient.name %></h6>
+                                            <small class="text-muted">
+                                                <i class="fas fa-calendar me-1"></i>
                                                 <%= new Date(request.createdAt).toLocaleDateString() %>
-                                            </p>
+                                            </small>
                                         </div>
                                     </div>
-                                    <div class="request-actions">
-                                        <a href="/swaps/<%= request._id %>" class="btn btn-sm btn-primary">
+                                    <p class="mb-2 small text-muted">
+                                        <strong>Wants:</strong> <%= request.skillsWanted.join(', ') %>
+                                    </p>
+                                    <div class="text-end">
+                                        <a href="/swaps/<%= request._id %>" class="btn btn-sm" style="background: #8b4513; color: white; border: none;">
                                             View Details
                                         </a>
                                     </div>
                                 </div>
                             <% }); %>
                         </div>
-                        <div class="card-footer">
-                            <a href="/swaps?type=outgoing&status=pending" class="btn btn-outline">
-                                View All Outgoing
-                            </a>
-                        </div>
+                        <% if (outgoingRequests.length > 3) { %>
+                            <div class="text-center mt-3">
+                                <a href="/swaps?type=outgoing&status=pending" class="btn btn-outline-secondary btn-sm">
+                                    View All Outgoing
+                                </a>
+                            </div>
+                        <% } %>
                     <% } else { %>
-                        <div class="empty-state">
-                            <i class="fas fa-paper-plane"></i>
-                            <h4>No outgoing requests</h4>
-                            <p>Start exploring and send skill swap requests to other users!</p>
-                            <a href="/users/search" class="btn btn-primary">
-                                <i class="fas fa-search"></i>
+                        <div class="text-center py-5">
+                            <i class="fas fa-paper-plane text-muted" style="font-size: 3rem; margin-bottom: 1rem;"></i>
+                            <h6 class="text-muted">No outgoing requests</h6>
+                            <p class="text-muted small">Start exploring and send skill swap requests to other users!</p>
+                            <a href="/users/search" class="btn btn-sm" style="background: #d4a574; color: #8b4513; border: 1px solid #8b4513; font-weight: 500;">
+                                <i class="fas fa-search me-1"></i>
                                 Find Skills
                             </a>
                         </div>
@@ -338,249 +336,66 @@
 </div>
 
 <style>
-/* Dashboard Styles */
-.dashboard-header {
-    margin-bottom: var(--space-8);
+/* Dashboard Custom Styles */
+.card {
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 
-.welcome-card {
-    background: linear-gradient(135deg, var(--primary-500), var(--primary-600));
-    color: white;
-    border-radius: var(--radius-2xl);
-    padding: var(--space-8);
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    box-shadow: var(--shadow-lg);
-    position: relative;
-    overflow: hidden;
-}
-
-.welcome-card::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.1'%3E%3Ccircle cx='30' cy='30' r='2'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
-}
-
-.welcome-content {
-    position: relative;
-    z-index: 1;
-}
-
-.welcome-content h1 {
-    font-size: 2rem;
-    margin-bottom: var(--space-2);
-    font-weight: 700;
-}
-
-.welcome-content p {
-    opacity: 0.9;
-    font-size: 1.125rem;
-    margin-bottom: 0;
-}
-
-.welcome-actions {
-    display: flex;
-    gap: var(--space-3);
-    position: relative;
-    z-index: 1;
-}
-
-.announcements-section {
-    margin-bottom: var(--space-8);
-}
-
-.alert-content h4 {
-    margin-bottom: var(--space-2);
-    font-weight: 600;
-}
-
-.alert-content p {
-    margin-bottom: 0;
-}
-
-/* Stats Section */
-.stats-section {
-    margin-bottom: var(--space-8);
-}
-
-.stat-card {
-    background: white;
-    border-radius: var(--radius-xl);
-    padding: var(--space-6);
-    box-shadow: var(--shadow-md);
-    border: 1px solid var(--gray-100);
-    transition: all var(--transition-normal);
-    display: flex;
-    align-items: center;
-    gap: var(--space-4);
-}
-
-.stat-card:hover {
+.card:hover {
     transform: translateY(-2px);
-    box-shadow: var(--shadow-lg);
-}
-
-.stat-icon {
-    width: 60px;
-    height: 60px;
-    border-radius: var(--radius-xl);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 1.5rem;
-    color: white;
-}
-
-.stat-icon.pending {
-    background: linear-gradient(135deg, var(--warning-500), #d97706);
-}
-
-.stat-icon.accepted {
-    background: linear-gradient(135deg, var(--info-500), #0891b2);
-}
-
-.stat-icon.completed {
-    background: linear-gradient(135deg, var(--success-500), #059669);
-}
-
-.stat-icon.total {
-    background: linear-gradient(135deg, var(--primary-500), var(--primary-600));
-}
-
-.stat-content h3 {
-    font-size: 2rem;
-    font-weight: 700;
-    margin-bottom: var(--space-1);
-    color: var(--gray-900);
-}
-
-.stat-content p {
-    color: var(--gray-600);
-    font-weight: 500;
-    margin-bottom: 0;
-}
-
-/* Request Lists */
-.request-list {
-    display: flex;
-    flex-direction: column;
-    gap: var(--space-4);
-}
-
-.request-item {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: var(--space-4);
-    border: 1px solid var(--gray-200);
-    border-radius: var(--radius-lg);
-    transition: all var(--transition-fast);
+    box-shadow: 0 8px 25px rgba(0,0,0,0.15) !important;
 }
 
 .request-item:hover {
-    border-color: var(--primary-300);
-    background-color: var(--primary-50);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
 }
 
-.request-user {
-    display: flex;
-    align-items: center;
-    gap: var(--space-3);
-    flex: 1;
-}
-
-.avatar-placeholder-sm {
-    width: 40px;
-    height: 40px;
-    background: var(--gray-200);
-    border-radius: var(--radius-full);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: var(--gray-500);
-}
-
-.request-info h4 {
-    font-size: 1rem;
-    font-weight: 600;
-    margin-bottom: var(--space-1);
-    color: var(--gray-900);
-}
-
-.request-skills {
-    font-size: 0.875rem;
-    color: var(--gray-600);
-    margin-bottom: var(--space-1);
-}
-
-.request-date {
-    font-size: 0.75rem;
-    color: var(--gray-500);
-    display: flex;
-    align-items: center;
-    gap: var(--space-1);
-    margin-bottom: 0;
-}
-
-/* Empty States */
-.empty-state {
-    text-align: center;
-    padding: var(--space-8);
-    color: var(--gray-500);
-}
-
-.empty-state i {
-    font-size: 3rem;
-    margin-bottom: var(--space-4);
-    color: var(--gray-400);
-}
-
-.empty-state h4 {
-    margin-bottom: var(--space-2);
-    color: var(--gray-700);
-}
-
-.empty-state p {
-    margin-bottom: var(--space-4);
-}
-
-/* Responsive */
+/* Responsive adjustments */
 @media (max-width: 768px) {
-    .welcome-card {
+    .col-md-6 {
+        margin-bottom: 1rem;
+    }
+
+    .d-flex.gap-2.justify-content-center.flex-wrap {
         flex-direction: column;
-        text-align: center;
-        gap: var(--space-4);
+        align-items: center;
     }
-    
-    .welcome-actions {
-        width: 100%;
-        justify-content: center;
+
+    .d-flex.gap-2.justify-content-center.flex-wrap .btn {
+        width: 200px;
+        margin-bottom: 0.5rem;
     }
-    
-    .stat-card {
-        flex-direction: column;
-        text-align: center;
-        gap: var(--space-3);
-    }
-    
-    .request-item {
-        flex-direction: column;
-        align-items: flex-start;
-        gap: var(--space-3);
-    }
-    
-    .request-actions {
-        width: 100%;
-    }
-    
-    .request-actions .btn {
-        width: 100%;
-    }
+}
+
+/* Stats cards hover effect */
+.stats-section .card:hover .bg-warning,
+.stats-section .card:hover .bg-info,
+.stats-section .card:hover .bg-success,
+.stats-section .card:hover .bg-primary {
+    transform: scale(1.1);
+    transition: transform 0.2s ease;
+}
+
+/* Button hover effects */
+.btn:hover {
+    transform: translateY(-1px);
+    transition: transform 0.2s ease;
+}
+
+/* Custom button styles for better visibility */
+.btn[style*="background: white"] {
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.btn[style*="background: white"]:hover {
+    background: #f8f9fa !important;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+}
+
+.btn[style*="background: #8b4513"]:hover {
+    background: #a0522d !important;
+    box-shadow: 0 4px 8px rgba(139, 69, 19, 0.3);
 }
 </style>
 

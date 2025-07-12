@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title><%= title %> - Skill Swap Platform</title>
     <!-- Bootstrap CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
@@ -11,12 +11,12 @@
     <!-- Custom CSS -->
     <link rel="stylesheet" href="/css/style.css">
 </head>
-<body>
+<body class="<%= typeof isHomepage !== 'undefined' && isHomepage ? 'homepage' : '' %>">
     <!-- Modern Navbar -->
-    <nav class="navbar navbar-expand-lg navbar-dark fixed-top" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);">
+    <nav class="navbar navbar-expand-lg navbar-light fixed-top" style="background: linear-gradient(135deg, #f7f1e3 0%, #e8dcc6 100%); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); border-bottom: 1px solid rgba(139, 69, 19, 0.1); z-index: 1030;">
         <div class="container">
-            <a class="navbar-brand fw-bold text-white" href="/" style="font-size: 1.5rem;">
-                <i class="fas fa-exchange-alt me-2" style="color: #ffd700;"></i>
+            <a class="navbar-brand fw-bold" href="/" style="font-size: 1.5rem; color: #8b4513;">
+                <i class="fas fa-exchange-alt me-2" style="color: #d4af37;"></i>
                 Skill Swap
             </a>
 
@@ -28,26 +28,26 @@
                 <ul class="navbar-nav me-auto">
                     <% if (user) { %>
                         <li class="nav-item">
-                            <a class="nav-link text-white fw-medium px-3 py-2 rounded-3 mx-1" href="/users/dashboard" style="transition: all 0.3s ease;">
+                            <a class="nav-link fw-medium px-3 py-2 rounded-3 mx-1 nav-hover" href="/users/dashboard" style="transition: all 0.3s ease; color: #8b4513;">
                                 <i class="fas fa-tachometer-alt me-2"></i>
                                 Dashboard
                             </a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link text-white fw-medium px-3 py-2 rounded-3 mx-1" href="/users/search" style="transition: all 0.3s ease;">
+                            <a class="nav-link fw-medium px-3 py-2 rounded-3 mx-1 nav-hover" href="/users/search" style="transition: all 0.3s ease; color: #8b4513;">
                                 <i class="fas fa-search me-2"></i>
                                 Search
                             </a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link text-white fw-medium px-3 py-2 rounded-3 mx-1" href="/swaps" style="transition: all 0.3s ease;">
+                            <a class="nav-link fw-medium px-3 py-2 rounded-3 mx-1 nav-hover" href="/swaps" style="transition: all 0.3s ease; color: #8b4513;">
                                 <i class="fas fa-handshake me-2"></i>
                                 My Swaps
                             </a>
                         </li>
                         <% if (isAdmin) { %>
                             <li class="nav-item">
-                                <a class="nav-link fw-bold px-3 py-2 rounded-3 mx-1" href="/admin" style="background: rgba(255,255,255,0.2); color: #ffd700 !important; transition: all 0.3s ease;">
+                                <a class="nav-link fw-bold px-3 py-2 rounded-3 mx-1" href="/admin" style="background: rgba(139, 69, 19, 0.1); color: #8b4513 !important; transition: all 0.3s ease;">
                                     <i class="fas fa-cog me-2"></i>
                                     Admin
                                 </a>
@@ -59,11 +59,11 @@
                 <ul class="navbar-nav">
                     <% if (user) { %>
                         <li class="nav-item dropdown">
-                            <a class="nav-link dropdown-toggle d-flex align-items-center text-white fw-medium px-3 py-2 rounded-3" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" style="background: rgba(255,255,255,0.1); transition: all 0.3s ease;">
+                            <a class="nav-link dropdown-toggle d-flex align-items-center fw-medium px-3 py-2 rounded-3" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" style="background: rgba(139, 69, 19, 0.1); color: #8b4513; transition: all 0.3s ease;">
                                 <% if (user.profilePhoto) { %>
-                                    <img src="/uploads/<%= user.profilePhoto %>" alt="Profile" class="rounded-circle me-2" width="32" height="32" style="object-fit: cover; border: 2px solid rgba(255,255,255,0.3);">
+                                    <img src="/uploads/<%= user.profilePhoto %>" alt="Profile" class="rounded-circle me-2" width="32" height="32" style="object-fit: cover; border: 2px solid rgba(139, 69, 19, 0.3);">
                                 <% } else { %>
-                                    <i class="fas fa-user-circle me-2 fs-4" style="color: #ffd700;"></i>
+                                    <i class="fas fa-user-circle me-2 fs-4" style="color: #d4af37;"></i>
                                 <% } %>
                                 <%= user.name %>
                             </a>
@@ -87,13 +87,13 @@
                         </li>
                     <% } else { %>
                         <li class="nav-item">
-                            <a class="nav-link text-white fw-medium px-3 py-2 rounded-3 mx-1" href="/auth/login" style="transition: all 0.3s ease;">
+                            <a class="nav-link fw-medium px-3 py-2 rounded-3 mx-1 nav-hover" href="/auth/login" style="transition: all 0.3s ease; color: #8b4513;">
                                 <i class="fas fa-sign-in-alt me-2"></i>
                                 Login
                             </a>
                         </li>
                         <li class="nav-item">
-                            <a class="btn btn-light fw-bold px-4 py-2 ms-2 rounded-3" href="/auth/register" style="color: #667eea !important; transition: all 0.3s ease; box-shadow: 0 4px 15px rgba(255,255,255,0.2);">
+                            <a class="btn fw-bold px-4 py-2 ms-2 rounded-3" href="/auth/register" style="background: #8b4513; color: white !important; transition: all 0.3s ease; box-shadow: 0 4px 15px rgba(139, 69, 19, 0.2); border: none;">
                                 <i class="fas fa-user-plus me-2"></i>
                                 Register
                             </a>
@@ -103,5 +103,128 @@
             </div>
         </div>
     </nav>
+
+    <style>
+        /* Navigation hover effects */
+        .nav-hover:hover {
+            background: rgba(139, 69, 19, 0.1) !important;
+            transform: translateY(-1px);
+        }
+
+        .navbar-brand:hover {
+            transform: scale(1.05);
+            transition: all 0.3s ease;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(139, 69, 19, 0.3) !important;
+        }
+
+        /* Smooth navbar background */
+        .navbar {
+            transition: all 0.3s ease;
+        }
+
+        /* Dropdown styling */
+        .dropdown-menu {
+            background: rgba(247, 241, 227, 0.95) !important;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(139, 69, 19, 0.1) !important;
+        }
+
+        .dropdown-item:hover {
+            background: rgba(139, 69, 19, 0.1) !important;
+            color: #8b4513 !important;
+        }
+
+        /* Ensure no gap on homepage */
+        body.homepage {
+            margin: 0 !important;
+            padding: 0 !important;
+        }
+
+        body.homepage .hero-section {
+            margin: 0 !important;
+            border: none !important;
+            outline: none !important;
+            display: block !important;
+        }
+
+        /* Reset all margins and padding that could cause gaps */
+        body.homepage section,
+        body.homepage .container,
+        body.homepage .container-fluid,
+        body.homepage .row {
+            margin-top: 0 !important;
+            border-top: none !important;
+        }
+
+        /* Ensure the navbar height is exactly what we expect */
+        .navbar.fixed-top {
+            height: 76px !important;
+        }
+
+        /* Mobile navbar adjustments */
+        @media (max-width: 575.98px) {
+            .navbar.fixed-top {
+                height: 70px !important;
+                padding: 0.5rem 1rem !important;
+            }
+
+            .navbar-brand {
+                font-size: 1.1rem !important;
+            }
+
+            .navbar-toggler {
+                padding: 0.25rem 0.5rem !important;
+                font-size: 0.875rem !important;
+            }
+
+            .navbar-collapse {
+                margin-top: 0.5rem !important;
+            }
+
+            .navbar-nav .nav-link {
+                padding: 0.5rem 0 !important;
+                text-align: center !important;
+            }
+
+            .btn {
+                width: 100% !important;
+                margin: 0.25rem 0 !important;
+            }
+        }
+
+        /* Additional mobile fixes */
+        @media (max-width: 480px) {
+            html, body {
+                overflow-x: hidden !important;
+                max-width: 100vw !important;
+            }
+
+            * {
+                max-width: 100% !important;
+                box-sizing: border-box !important;
+            }
+
+            .hero-section {
+                width: 100vw !important;
+                margin-left: calc(-50vw + 50%) !important;
+                margin-right: calc(-50vw + 50%) !important;
+                padding-left: 15px !important;
+                padding-right: 15px !important;
+            }
+
+            .container,
+            .container-fluid {
+                max-width: 100% !important;
+                padding-left: 15px !important;
+                padding-right: 15px !important;
+                margin-left: auto !important;
+                margin-right: auto !important;
+            }
+        }
+    </style>
 
     <main style="padding-top: 80px; min-height: calc(100vh - 140px);"

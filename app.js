@@ -69,15 +69,17 @@ app.get('/', async (req, res) => {
     .limit(6)
     .sort({ createdAt: -1 });
 
-    res.render('index', { 
+    res.render('index', {
       title: 'Skill Swap Platform',
-      recentUsers
+      recentUsers,
+      isHomepage: true
     });
   } catch (error) {
     console.error('Home page error:', error);
-    res.render('index', { 
+    res.render('index', {
       title: 'Skill Swap Platform',
-      recentUsers: []
+      recentUsers: [],
+      isHomepage: true
     });
   }
 });
