@@ -24,7 +24,7 @@
                 <span class="navbar-toggler-icon"></span>
             </button>
 
-            <div class="collapse navbar-collapse" id="navbarNav">
+            <div class="collapse navbar-collapse" id="navbarNav" style="background: linear-gradient(135deg, #f7f1e3 0%, #e8dcc6 100%); border-radius: 8px; margin-top: 10px; padding: 15px; box-shadow: 0 4px 15px rgba(139, 69, 19, 0.1);">
                 <ul class="navbar-nav me-auto">
                     <% if (user) { %>
                         <li class="nav-item">
@@ -118,6 +118,33 @@
 
         .btn:hover {
             transform: translateY(-2px);
+        }
+
+        /* Mobile navbar background */
+        @media (max-width: 991.98px) {
+            .navbar-collapse {
+                background: linear-gradient(135deg, #f7f1e3 0%, #e8dcc6 100%) !important;
+                border-radius: 8px !important;
+                margin-top: 10px !important;
+                padding: 15px !important;
+                box-shadow: 0 4px 15px rgba(139, 69, 19, 0.1) !important;
+                border: 1px solid rgba(139, 69, 19, 0.1);
+            }
+        }
+
+        /* Desktop navbar - remove background from collapse */
+        @media (min-width: 992px) {
+            .navbar-collapse {
+                background: none !important;
+                border-radius: 0 !important;
+                margin-top: 0 !important;
+                padding: 0 !important;
+                box-shadow: none !important;
+                border: none !important;
+            }
+        }
+
+        .btn:hover {
             box-shadow: 0 6px 20px rgba(139, 69, 19, 0.3) !important;
         }
 
